@@ -34,5 +34,13 @@ module.exports = withPWA({
   images: {
     domains: ['firebasestorage.googleapis.com'],
   },
+  eslint: {
+    // Allow build to proceed even with ESLint warnings
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    // Allow build to proceed even with TypeScript errors (if any)
+    ignoreBuildErrors: false,
+  },
 });
 
