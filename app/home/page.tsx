@@ -115,11 +115,33 @@ function HomeContent() {
   }, [userData, loading]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        color: '#ffffff',
+        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+      }}>
+        Loading...
+      </div>
+    );
   }
 
   if (!userData || !userData.dorm) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        color: '#ffffff',
+        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+      }}>
+        Loading...
+      </div>
+    );
   }
 
   return (

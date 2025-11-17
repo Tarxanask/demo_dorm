@@ -39,7 +39,7 @@ export default function Home() {
           objectFit: 'cover'
         }}
       />
-      <div style={{ fontSize: '1.1rem', color: '#666' }}>Loading...</div>
+      <div style={{ fontSize: '1.1rem', color: '#ffffff', textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)' }}>Loading...</div>
     </div>
   );
 }

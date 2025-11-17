@@ -243,11 +243,28 @@ function ChatPageContent() {
     return (
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
-        height: '100vh' 
+        height: '100vh',
+        gap: '1rem'
       }}>
-        <div>Loading...</div>
+        <img 
+          src="/images/logo.png" 
+          alt="Dormzy" 
+          style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '12px',
+            objectFit: 'cover'
+          }}
+        />
+        <div style={{ 
+          color: '#ffffff',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+        }}>
+          Loading...
+        </div>
       </div>
     );
   }

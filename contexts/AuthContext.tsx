@@ -19,7 +19,7 @@ interface AuthContextType {
   userData: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<any>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   updateUserData: (data: Partial<User>) => Promise<void>;
@@ -73,9 +73,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           photoURL: user.photoURL || '',
           createdAt: new Date()
         }, { merge: true });
+      } else {
+        // Update existing user document with latest Google info (in case they changed their Google profile)
+        await setDoc(userRef, {
+          email: user.email,
+          displayName: user.displayName || userDoc.data()?.displayName || user.email?.split('@')[0] || 'User',
+          photoURL: user.photoURL || userDoc.data()?.photoURL || '',
+          updatedAt: new Date()
+        }, { merge: true });
       }
     } catch (error: any) {
       console.error('Google login error:', error);
+      // Re-throw to let the calling component handle it
       throw error;
     }
   }

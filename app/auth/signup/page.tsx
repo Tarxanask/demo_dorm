@@ -24,7 +24,8 @@ function SignupContent() {
       await loginWithGoogle();
       // Set flag to show welcome message after profile creation
       sessionStorage.setItem('justLoggedIn', 'true');
-      router.push('/profile/create');
+      // Don't redirect here - let the useEffect in AuthContext handle it
+      // The redirect will happen automatically based on userData state
     } catch (err: any) {
       let errorMessage = 'Failed to sign in with Google. Please try again.';
       
@@ -34,6 +35,10 @@ function SignupContent() {
         errorMessage = 'Popup was blocked. Please allow popups and try again.';
       } else if (err.code === 'auth/cancelled-popup-request') {
         errorMessage = 'Only one popup request is allowed at a time.';
+      } else if (err.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account with this email already exists. Please log in instead.';
+      } else if (err.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please log in instead.';
       } else if (err.message) {
         errorMessage = err.message;
       }
