@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { Event, User } from '@/firebase/types';
 import Link from 'next/link';
@@ -231,7 +230,7 @@ export default function EventDetailsPage() {
                 <strong>For visitors to {event.dormId}:</strong>
                 <ul style={{ marginTop: '0.5rem', marginLeft: '1.5rem', paddingLeft: '0' }}>
                   <li>You must be accompanied by a {event.dormId} resident (the host)</li>
-                  <li>Obey {event.dormId}'s rules (quiet hours, no alcohol in common areas if forbidden)</li>
+                  <li>Obey {event.dormId}&apos;s rules (quiet hours, no alcohol in common areas if forbidden)</li>
                   <li>Present ID at reception if requested</li>
                 </ul>
               </div>

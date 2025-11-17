@@ -7,7 +7,6 @@ import {
   collection, 
   query, 
   where, 
-  orderBy, 
   onSnapshot,
   doc,
   getDoc,
@@ -17,7 +16,7 @@ import {
   arrayRemove
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { DormType, Event, User } from '@/firebase/types';
+import { DormType, Event } from '@/firebase/types';
 import Link from 'next/link';
 import { format } from 'date-fns';
 

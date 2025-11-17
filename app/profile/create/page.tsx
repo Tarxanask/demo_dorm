@@ -92,7 +92,7 @@ function CreateProfileContent() {
       const existingData = existingDoc.exists() ? existingDoc.data() : null;
 
       // Build user data object, preserve existing createdAt if it exists
-      const userDataUpdate: any = {
+      const userDataUpdate: Record<string, unknown> = {
         displayName: name,
         dorm: dorm as DormType,
         faculty,
@@ -129,23 +129,24 @@ function CreateProfileContent() {
       
       // Redirect to home
       router.push('/home');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
       let errorMessage = 'Failed to create profile. Please try again.';
       
-      if (err.code === 'storage/unauthorized') {
+      if (error.code === 'storage/unauthorized') {
         errorMessage = 'You do not have permission to upload images. Please check your account settings.';
-      } else if (err.code === 'storage/quota-exceeded') {
+      } else if (error.code === 'storage/quota-exceeded') {
         errorMessage = 'Storage quota exceeded. Please contact support.';
-      } else if (err.code === 'permission-denied') {
+      } else if (error.code === 'permission-denied') {
         errorMessage = 'Permission denied. Please make sure you are logged in and have the necessary permissions.';
-      } else if (err.message) {
-        if (err.message.includes('invalid data') || err.message.includes('Unsupported field value')) {
+      } else if (error.message) {
+        if (error.message.includes('invalid data') || error.message.includes('Unsupported field value')) {
           errorMessage = 'There was an issue with the profile data. Please check all fields and try again.';
-        } else if (err.message.includes('network') || err.message.includes('offline')) {
+        } else if (error.message.includes('network') || error.message.includes('offline')) {
           errorMessage = 'Network error. Please check your internet connection and try again.';
         } else {
-          errorMessage = err.message;
+          errorMessage = error.message;
         }
       }
       
@@ -159,7 +160,7 @@ function CreateProfileContent() {
     <div className="container" style={{ maxWidth: '600px', marginTop: '2rem' }}>
       <div className="card">
         <h1 style={{ marginBottom: '1rem', textAlign: 'center' }}>
-          You're a dorm user, congrats! 🎉
+          You&apos;re a dorm user, congrats! 🎉
         </h1>
         <p style={{ marginBottom: '1.5rem', textAlign: 'center', color: '#666' }}>
           Choose your dorm and create your profile

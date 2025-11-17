@@ -60,17 +60,18 @@ function LoginContent() {
       // Set flag to show welcome message on home page
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect handle it after userData is loaded
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       let errorMessage = 'Failed to sign in with Google. Please try again.';
       
-      if (err.code === 'auth/popup-closed-by-user') {
+      if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-in popup was closed. Please try again.';
-      } else if (err.code === 'auth/popup-blocked') {
+      } else if (error.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked. Please allow popups and try again.';
-      } else if (err.code === 'auth/cancelled-popup-request') {
+      } else if (error.code === 'auth/cancelled-popup-request') {
         errorMessage = 'Only one popup request is allowed at a time.';
-      } else if (err.message) {
-        errorMessage = err.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       setError(errorMessage);
@@ -88,30 +89,31 @@ function LoginContent() {
       // Set flag to show welcome message on home page
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect handle it after userData is loaded
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
       let errorMessage = 'Failed to log in. Please try again.';
       
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
         errorMessage = 'Invalid email or password. Please check your credentials and try again.';
-      } else if (err.code === 'auth/user-not-found') {
+      } else if (error.code === 'auth/user-not-found') {
         errorMessage = 'No account found with this email address. Please sign up first.';
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address. Please check your email and try again.';
-      } else if (err.code === 'auth/network-request-failed') {
+      } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (err.code === 'auth/too-many-requests') {
+      } else if (error.code === 'auth/too-many-requests') {
         errorMessage = 'Too many failed login attempts. Please try again later.';
-      } else if (err.code === 'auth/user-disabled') {
+      } else if (error.code === 'auth/user-disabled') {
         errorMessage = 'This account has been disabled. Please contact support.';
-      } else if (err.message) {
+      } else if (error.message) {
         // Check if the error message contains the code
-        if (err.message.includes('invalid-credential') || err.message.includes('wrong-password')) {
+        if (error.message.includes('invalid-credential') || error.message.includes('wrong-password')) {
           errorMessage = 'Invalid email or password. Please check your credentials and try again.';
-        } else if (err.message.includes('user-not-found')) {
+        } else if (error.message.includes('user-not-found')) {
           errorMessage = 'No account found with this email address. Please sign up first.';
         } else {
-          errorMessage = err.message;
+          errorMessage = error.message;
         }
       }
       
@@ -273,7 +275,7 @@ function LoginContent() {
 
         <div style={{ marginTop: '1rem', textAlign: 'center' }}>
           <Link href="/auth/signup" style={{ color: '#667eea', fontWeight: '500' }}>
-            Don't have an account? Sign up
+            Don&apos;t have an account? Sign up
           </Link>
         </div>
       </div>

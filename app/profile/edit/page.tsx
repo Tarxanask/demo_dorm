@@ -80,7 +80,7 @@ function EditProfileContent() {
       }
 
       // Build update data, only include photoURL if it has a value
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         displayName: name,
         faculty,
         hobbies
@@ -94,23 +94,24 @@ function EditProfileContent() {
       await updateUserData(updateData);
 
       router.push('/profile');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
       let errorMessage = 'Failed to update profile. Please try again.';
       
-      if (err.code === 'storage/unauthorized') {
+      if (error.code === 'storage/unauthorized') {
         errorMessage = 'You do not have permission to upload images. Please check your account settings.';
-      } else if (err.code === 'storage/quota-exceeded') {
+      } else if (error.code === 'storage/quota-exceeded') {
         errorMessage = 'Storage quota exceeded. Please contact support.';
-      } else if (err.code === 'permission-denied') {
+      } else if (error.code === 'permission-denied') {
         errorMessage = 'Permission denied. Please make sure you are logged in and have the necessary permissions.';
-      } else if (err.message) {
-        if (err.message.includes('invalid data') || err.message.includes('Unsupported field value')) {
+      } else if (error.message) {
+        if (error.message.includes('invalid data') || error.message.includes('Unsupported field value')) {
           errorMessage = 'There was an issue with the profile data. Please check all fields and try again.';
-        } else if (err.message.includes('network') || err.message.includes('offline')) {
+        } else if (error.message.includes('network') || error.message.includes('offline')) {
           errorMessage = 'Network error. Please check your internet connection and try again.';
         } else {
-          errorMessage = err.message;
+          errorMessage = error.message;
         }
       }
       

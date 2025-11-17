@@ -88,7 +88,7 @@ function CreateEventContent() {
       }
 
       // Build event data object, only include imageURL if it has a value
-      const eventData: any = {
+      const eventData: Record<string, unknown> = {
         dormId,
         hostId: currentUser.uid,
         hostName: userData.displayName,
@@ -110,27 +110,28 @@ function CreateEventContent() {
         eventData.imageURL = imageURL;
       }
 
-      const docRef = await addDoc(collection(db, 'events'), eventData);
+      await addDoc(collection(db, 'events'), eventData);
 
       router.push(`/events/${dormId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
       let errorMessage = 'Failed to create event. Please try again.';
       
-      if (err.code === 'storage/unauthorized') {
+      if (error.code === 'storage/unauthorized') {
         errorMessage = 'You do not have permission to upload images. Please check your account settings.';
-      } else if (err.code === 'storage/quota-exceeded') {
+      } else if (error.code === 'storage/quota-exceeded') {
         errorMessage = 'Storage quota exceeded. Please contact support.';
-      } else if (err.code === 'permission-denied') {
+      } else if (error.code === 'permission-denied') {
         errorMessage = 'Permission denied. Please make sure you are logged in and have the necessary permissions.';
-      } else if (err.message) {
+      } else if (error.message) {
         // Check for common Firebase error patterns
-        if (err.message.includes('invalid data') || err.message.includes('Unsupported field value')) {
+        if (error.message.includes('invalid data') || error.message.includes('Unsupported field value')) {
           errorMessage = 'There was an issue with the event data. Please check all fields and try again.';
-        } else if (err.message.includes('network') || err.message.includes('offline')) {
+        } else if (error.message.includes('network') || error.message.includes('offline')) {
           errorMessage = 'Network error. Please check your internet connection and try again.';
         } else {
-          errorMessage = err.message;
+          errorMessage = error.message;
         }
       }
       
@@ -221,7 +222,7 @@ function CreateEventContent() {
                   <strong>Important:</strong> As a visitor, you must:
                   <ul style={{ marginTop: '0.5rem', marginLeft: '1.5rem', paddingLeft: '0' }}>
                     <li>Be accompanied by a {dormId} resident (the host)</li>
-                    <li>Obey {dormId}'s rules (quiet hours, no alcohol in common areas if forbidden)</li>
+                    <li>Obey {dormId}&apos;s rules (quiet hours, no alcohol in common areas if forbidden)</li>
                     <li>Present ID at reception if requested</li>
                   </ul>
                 </div>

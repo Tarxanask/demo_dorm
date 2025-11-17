@@ -10,7 +10,6 @@ import {
   onSnapshot, 
   addDoc,
   updateDoc,
-  deleteDoc,
   doc,
   getDoc,
   getDocs
@@ -103,7 +102,7 @@ function ChatPageContent() {
         
         setMessages(messagesList);
       },
-      (error: any) => {
+      (error: unknown) => {
         console.error('Error fetching messages:', error);
       }
     );

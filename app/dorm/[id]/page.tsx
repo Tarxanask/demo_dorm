@@ -44,7 +44,7 @@ const DORM_INFO: Record<DormType, { location: string; facilities: string[]; desc
 export default function DormPage() {
   const params = useParams();
   const router = useRouter();
-  const { currentUser, userData } = useAuth();
+  const { currentUser } = useAuth();
   const [members, setMembers] = useState<User[]>([]);
   // Decode the dormId from URL (handles URL encoding like %20 for spaces)
   const dormId = decodeURIComponent(params.id as string) as DormType;

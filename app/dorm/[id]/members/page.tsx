@@ -11,7 +11,7 @@ import Link from 'next/link';
 export default function MembersPage() {
   const params = useParams();
   const router = useRouter();
-  const { currentUser, userData, loading: authLoading } = useAuth();
+  const { currentUser, loading: authLoading } = useAuth();
   const [members, setMembers] = useState<User[]>([]);
   const dormId = decodeURIComponent(params.id as string) as DormType;
 

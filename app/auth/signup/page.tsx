@@ -26,21 +26,22 @@ function SignupContent() {
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect in AuthContext handle it
       // The redirect will happen automatically based on userData state
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       let errorMessage = 'Failed to sign in with Google. Please try again.';
       
-      if (err.code === 'auth/popup-closed-by-user') {
+      if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-in popup was closed. Please try again.';
-      } else if (err.code === 'auth/popup-blocked') {
+      } else if (error.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked. Please allow popups and try again.';
-      } else if (err.code === 'auth/cancelled-popup-request') {
+      } else if (error.code === 'auth/cancelled-popup-request') {
         errorMessage = 'Only one popup request is allowed at a time.';
-      } else if (err.code === 'auth/account-exists-with-different-credential') {
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
         errorMessage = 'An account with this email already exists. Please log in instead.';
-      } else if (err.code === 'auth/email-already-in-use') {
+      } else if (error.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already registered. Please log in instead.';
-      } else if (err.message) {
-        errorMessage = err.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
       setError(errorMessage);
@@ -76,30 +77,31 @@ function SignupContent() {
       });
 
       router.push('/profile/create');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
       let errorMessage = 'Failed to sign up. Please try again.';
       
-      if (err.code === 'auth/email-already-in-use') {
+      if (error.code === 'auth/email-already-in-use') {
         errorMessage = 'This email is already registered. Please log in instead.';
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address. Please check your email and try again.';
-      } else if (err.code === 'auth/weak-password') {
+      } else if (error.code === 'auth/weak-password') {
         errorMessage = 'Password is too weak. Please use at least 6 characters.';
-      } else if (err.code === 'auth/network-request-failed') {
+      } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection and try again.';
-      } else if (err.code === 'auth/operation-not-allowed') {
+      } else if (error.code === 'auth/operation-not-allowed') {
         errorMessage = 'Email/password accounts are not enabled. Please contact support.';
-      } else if (err.message) {
+      } else if (error.message) {
         // Check if the error message contains the code
-        if (err.message.includes('email-already-in-use')) {
+        if (error.message.includes('email-already-in-use')) {
           errorMessage = 'This email is already registered. Please log in instead.';
-        } else if (err.message.includes('invalid-email')) {
+        } else if (error.message.includes('invalid-email')) {
           errorMessage = 'Invalid email address. Please check your email and try again.';
-        } else if (err.message.includes('weak-password')) {
+        } else if (error.message.includes('weak-password')) {
           errorMessage = 'Password is too weak. Please use at least 6 characters.';
         } else {
-          errorMessage = err.message;
+          errorMessage = error.message;
         }
       }
       
