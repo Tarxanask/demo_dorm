@@ -141,14 +141,6 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {!isOwnProfile && (
-              <Link 
-                href={`/chat/direct/${profile.uid}`}
-                className="btn btn-primary"
-              >
-                Start Chat
-              </Link>
-            )}
 
             {isOwnProfile && (
               <Link 
