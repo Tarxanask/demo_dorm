@@ -7,7 +7,7 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { db } from '@/firebase/config';
 import { DormType, Event, User } from '@/firebase/types';
 import Link from 'next/link';
-import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHome, FiHash, FiBell } from 'react-icons/fi';
+import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHome, FiHash, FiLogOut } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const DORMS: { id: DormType; name: string; color: string }[] = [
@@ -342,6 +342,7 @@ function HomeContent() {
             )}
             <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }}></div>
             <button 
+              onClick={() => logout()}
               style={{
                 width: '36px',
                 height: '36px',
@@ -352,8 +353,7 @@ function HomeContent() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                transition: 'background 0.2s',
-                position: 'relative'
+                transition: 'background 0.2s'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#f3f4f6';
@@ -361,17 +361,9 @@ function HomeContent() {
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';
               }}
+              title="Logout"
             >
-              <FiBell size={20} color="#6b7280" />
-              <div style={{
-                position: 'absolute',
-                top: '4px',
-                right: '4px',
-                width: '8px',
-                height: '8px',
-                background: '#ef4444',
-                borderRadius: '50%'
-              }}></div>
+              <FiLogOut size={20} color="#6b7280" />
             </button>
             <Link 
               href="/profile"

@@ -8,6 +8,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
+import { notifyDormUsers } from '@/utils/notifications';
 import { EVENT_IMAGES } from '../eventImages';
 
 const DORMS: { id: DormType; name: string }[] = [
@@ -111,6 +112,18 @@ function CreateEventContent() {
       }
 
       await addDoc(collection(db, 'events'), eventData);
+
+      // Send notification to dorm users
+      try {
+        await notifyDormUsers(
+          dormId,
+          'New Event Created!',
+          `${userData.displayName} created "${title}" in ${dormId}`,
+          { type: 'event', eventId: '', dormId, url: `/events/${dormId}` }
+        );
+      } catch (notifError) {
+        console.error('Error sending notification:', notifError);
+      }
 
       router.push(`/events/${dormId}`);
     } catch (err: unknown) {

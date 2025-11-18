@@ -17,6 +17,7 @@ import { db } from '@/firebase/config';
 import { ChatMessage, User, DormType } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
+import { notifyAllUsers } from '@/utils/notifications';
 
 export default function GlobalChatPage() {
   const router = useRouter();
@@ -111,6 +112,17 @@ export default function GlobalChatPage() {
         edited: false,
         deleted: false
       });
+
+      // Send notification to all users
+      try {
+        await notifyAllUsers(
+          'New message in Global Chat',
+          `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
+          { type: 'message', url: '/chat/global' }
+        );
+      } catch (notifError) {
+        console.error('Error sending notification:', notifError);
+      }
 
       setNewMessage('');
       setReplyTo(null);

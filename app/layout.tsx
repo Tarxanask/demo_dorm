@@ -38,6 +38,19 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#0070f3" />
         <meta name="msapplication-TileImage" content="/images/logo.png" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                  if (event.data && event.data.type === 'NOTIFICATION_CLICK') {
+                    window.location.href = event.data.url || '/home';
+                  }
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body>
         <Providers>

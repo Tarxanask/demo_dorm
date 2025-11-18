@@ -18,6 +18,7 @@ import { db } from '@/firebase/config';
 import { DormType, ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
+import { notifyDormUsers } from '@/utils/notifications';
 
 function ChatPageContent() {
   const params = useParams();
@@ -157,6 +158,18 @@ function ChatPageContent() {
           timestamp: new Date(),
           deleted: false
         });
+
+        // Send notification to dorm users (except sender)
+        try {
+          await notifyDormUsers(
+            dormId,
+            `New message in ${dormId}`,
+            `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
+            { type: 'message', dormId, url: `/chat/${encodeURIComponent(dormId)}` }
+          );
+        } catch (notifError) {
+          console.error('Error sending notification:', notifError);
+        }
       }
 
       setNewMessage('');

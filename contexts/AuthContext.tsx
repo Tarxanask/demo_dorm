@@ -13,6 +13,7 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/firebase/config';
 import { User, DormType } from '@/firebase/types';
+import { subscribeToPushNotifications } from '@/utils/notifications';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
@@ -137,6 +138,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             ...data,
             createdAt: data.createdAt?.toDate() || new Date()
           } as User);
+          
+          // Subscribe to push notifications after user data is loaded
+          if (data.dorm) {
+            subscribeToPushNotifications(user.uid).catch(err => {
+              console.error('Error subscribing to notifications:', err);
+            });
+          }
         } else {
           // User document doesn't exist - set to null explicitly
           setUserData(null);
