@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import NotificationHandler from '@/components/NotificationHandler';
 
 export const metadata: Metadata = {
   title: 'Dormzy',
@@ -56,6 +57,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <PWAInstallPrompt />
+          <NotificationHandler />
         </Providers>
       </body>
     </html>
