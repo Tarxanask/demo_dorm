@@ -1,187 +1,45 @@
-import React, { useState } from 'react';
+// OLD:
 import { Users, MessageCircle, Calendar, Plus, Hash, Bell, Search, Settings, ChevronDown, Home } from 'lucide-react';
 
-export default function ModernDormUI() {
-  const [selectedDorm, setSelectedDorm] = useState('KTU');
-  
-  const dorms = [
-    { name: 'KTU', members: 1, color: 'bg-blue-500' },
-    { name: 'LSMU', members: 1, color: 'bg-green-500' },
-    { name: 'Solo Society', members: 1, color: 'bg-purple-500' },
-    { name: 'Baltija VDU', members: 1, color: 'bg-orange-500' },
-    { name: 'Other Dorms', members: 2, color: 'bg-pink-500', badge: true }
-  ];
+// NEW:
+import { Users, MessageCircle, Calendar, Plus, Hash, Bell, Settings, ChevronDown, Home } from 'lucide-react';
 
-  const currentDorm = dorms.find(d => d.name === selectedDorm);
 
-  return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Left Sidebar - Discord Style */}
-      <div className="w-20 bg-gray-900 flex flex-col items-center py-4 gap-3">
-        <div className="w-12 h-12 bg-indigo-500 rounded-2xl hover:rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer">
-          <Home className="w-6 h-6 text-white" />
-        </div>
-        
-        <div className="w-8 h-0.5 bg-gray-700 rounded-full"></div>
-        
-        {dorms.map((dorm, idx) => (
-          <div
-            key={idx}
-            onClick={() => setSelectedDorm(dorm.name)}
-            className={`relative w-12 h-12 ${dorm.color} ${
-              selectedDorm === dorm.name ? 'rounded-xl' : 'rounded-3xl hover:rounded-xl'
-            } transition-all duration-200 flex items-center justify-center cursor-pointer group`}
-          >
-            <span className="text-white font-bold text-sm">
-              {dorm.name.substring(0, 2).toUpperCase()}
-            </span>
-            {dorm.badge && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-gray-900"></div>
-            )}
-            <div className="absolute left-16 bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">
-              {dorm.name}
-            </div>
-          </div>
-        ))}
-      </div>
+//Replace the search section in the top bar with Members and Info buttons:
+//javascript// OLD CODE (remove this):
+<div className="flex items-center gap-3">
+  <div className="relative">
+    <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+    <input
+      type="text"
+      placeholder="Search..."
+      className="pl-9 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
+    />
+  </div>
+  <button className="w-9 h-9 hover:bg-gray-100 rounded-lg flex items-center justify-center">
+    <Bell className="w-5 h-5 text-gray-600" />
+  </button>
+  <div className="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center cursor-pointer">
+    <span className="text-white font-semibold">D</span>
+  </div>
+</div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Bar */}
-        <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <Hash className="w-5 h-5 text-gray-400" />
-            <span className="font-semibold text-gray-900 text-lg">{selectedDorm}</span>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-9 pr-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
-              />
-            </div>
-            <button className="w-9 h-9 hover:bg-gray-100 rounded-lg flex items-center justify-center">
-              <Bell className="w-5 h-5 text-gray-600" />
-            </button>
-            <div className="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center cursor-pointer">
-              <span className="text-white font-semibold">D</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-8">
-          <div className="max-w-6xl mx-auto space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 ${currentDorm.color} rounded-xl flex items-center justify-center`}>
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">{currentDorm.members}</div>
-                    <div className="text-sm text-gray-500 font-medium">Members</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">24</div>
-                    <div className="text-sm text-gray-500 font-medium">Messages</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                    <Calendar className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">3</div>
-                    <div className="text-sm text-gray-500 font-medium">Events</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div>
-              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <button className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-200 transition-all text-left group">
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                      <MessageCircle className="w-6 h-6 text-indigo-600" />
-                    </div>
-                    <span className="text-lg font-semibold text-gray-900">Join Chat</span>
-                  </div>
-                  <p className="text-sm text-gray-500 ml-16">Connect with your dorm members</p>
-                </button>
-                
-                <button className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition-all text-left group">
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                      <Calendar className="w-6 h-6 text-green-600" />
-                    </div>
-                    <span className="text-lg font-semibold text-gray-900">See Events</span>
-                  </div>
-                  <p className="text-sm text-gray-500 ml-16">View upcoming activities</p>
-                </button>
-              </div>
-            </div>
-
-            {/* Create Event Banner */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold mb-2">Create New Event</h3>
-                  <p className="text-indigo-100">Organize activities and bring your dorm together</p>
-                </div>
-                <button className="bg-white text-indigo-600 px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2">
-                  <Plus className="w-5 h-5" />
-                  Create Event
-                </button>
-              </div>
-            </div>
-
-            {/* Activity Feed */}
-            <div>
-              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Recent Activity</h2>
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
-                {[
-                  { user: 'John Doe', action: 'joined the dorm', time: '2 hours ago', avatar: 'JD' },
-                  { user: 'Sarah Miller', action: 'created an event', time: '5 hours ago', avatar: 'SM' },
-                  { user: 'Mike Ross', action: 'sent a message', time: '1 day ago', avatar: 'MR' }
-                ].map((activity, idx) => (
-                  <div key={idx} className="p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-11 h-11 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">{activity.avatar}</span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-900">
-                          <span className="font-semibold">{activity.user}</span> {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">{activity.time}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// NEW CODE (add this instead):
+<div className="flex items-center gap-2">
+  <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-lg transition-all shadow-sm">
+    <Users className="w-4 h-4 text-indigo-600" />
+    <span className="text-sm font-semibold text-gray-700">Members</span>
+  </button>
+  <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-lg transition-all shadow-sm">
+    <Hash className="w-4 h-4 text-indigo-600" />
+    <span className="text-sm font-semibold text-gray-700">Info</span>
+  </button>
+  <div className="w-px h-6 bg-gray-200 mx-2"></div>
+  <button className="w-9 h-9 hover:bg-gray-100 rounded-lg flex items-center justify-center transition-colors relative">
+    <Bell className="w-5 h-5 text-gray-600" />
+    <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+  </button>
+  <div className="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-indigo-600 transition-colors">
+    <span className="text-white font-semibold">D</span>
+  </div>
+</div>

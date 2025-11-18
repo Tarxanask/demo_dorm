@@ -7,7 +7,7 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { db } from '@/firebase/config';
 import { DormType, Event, User } from '@/firebase/types';
 import Link from 'next/link';
-import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHome, FiHash, FiSearch, FiBell, FiSettings } from 'react-icons/fi';
+import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHome, FiHash, FiBell } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const DORMS: { id: DormType; name: string; color: string }[] = [
@@ -161,7 +161,7 @@ function HomeContent() {
       background: '#f5f5f5',
       overflow: 'hidden'
     }}>
-      {/* Left Sidebar - Discord Style */}
+      {/* Left Sidebar - Discord Style - Always Visible */}
       <div style={{
         width: '80px',
         background: '#1e1e1e',
@@ -283,26 +283,96 @@ function HomeContent() {
             </span>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ position: 'relative' }}>
-              <FiSearch size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
-              <input
-                type="text"
-                placeholder="Search..."
-                style={{
-                  paddingLeft: '36px',
-                  paddingRight: '16px',
-                  paddingTop: '8px',
-                  paddingBottom: '8px',
-                  background: '#f3f4f6',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  width: '256px',
-                  outline: 'none'
-                }}
-              />
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {currentDorm && (
+              <>
+                <Link
+                  href={`/dorm/${encodeURIComponent(currentDorm.id)}/members`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f9fafb';
+                    e.currentTarget.style.borderColor = '#d1d5db';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                  }}
+                >
+                  <FiUsers size={16} color="#667eea" />
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Members</span>
+                </Link>
+                <Link
+                  href={`/dorm/${encodeURIComponent(currentDorm.id)}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    background: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f9fafb';
+                    e.currentTarget.style.borderColor = '#d1d5db';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                  }}
+                >
+                  <FiHash size={16} color="#667eea" />
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Info</span>
+                </Link>
+              </>
+            )}
+            <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }}></div>
+            <button 
+              style={{
+                width: '36px',
+                height: '36px',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                position: 'relative'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f3f4f6';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <FiBell size={20} color="#6b7280" />
+              <div style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                width: '8px',
+                height: '8px',
+                background: '#ef4444',
+                borderRadius: '50%'
+              }}></div>
+            </button>
             <Link 
               href="/profile"
               style={{
@@ -316,7 +386,14 @@ function HomeContent() {
                 color: 'white',
                 fontWeight: 'bold',
                 textDecoration: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'transform 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
               {userData.photoURL ? (
@@ -336,99 +413,99 @@ function HomeContent() {
         <div style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '32px',
+          padding: '16px',
           background: '#f5f5f5'
         }}>
-          <div style={{ maxWidth: '1152px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* Stats Cards */}
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '16px'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '12px'
             }}>
               <div style={{
                 background: 'white',
-                borderRadius: '16px',
-                padding: '24px',
+                borderRadius: '12px',
+                padding: '16px',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 border: '1px solid #f3f4f6'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    width: '48px',
-                    height: '48px',
+                    width: '40px',
+                    height: '40px',
                     background: currentDorm?.color || '#667eea',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white'
                   }}>
-                    <FiUsers size={24} />
+                    <FiUsers size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '30px', fontWeight: 700, color: '#111827' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
                       {currentDorm ? memberCounts[currentDorm.id] : 0}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>Members</div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: 500 }}>Members</div>
                   </div>
                 </div>
               </div>
               
               <div style={{
                 background: 'white',
-                borderRadius: '16px',
-                padding: '24px',
+                borderRadius: '12px',
+                padding: '16px',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 border: '1px solid #f3f4f6'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    width: '48px',
-                    height: '48px',
+                    width: '40px',
+                    height: '40px',
                     background: '#3b82f6',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white'
                   }}>
-                    <FiMessageCircle size={24} />
+                    <FiMessageCircle size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '30px', fontWeight: 700, color: '#111827' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
                       {currentDorm ? messageCounts[currentDorm.id] : 0}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>Messages</div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: 500 }}>Messages</div>
                   </div>
                 </div>
               </div>
               
               <div style={{
                 background: 'white',
-                borderRadius: '16px',
-                padding: '24px',
+                borderRadius: '12px',
+                padding: '16px',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 border: '1px solid #f3f4f6'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    width: '48px',
-                    height: '48px',
+                    width: '40px',
+                    height: '40px',
                     background: '#10b981',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white'
                   }}>
-                    <FiCalendar size={24} />
+                    <FiCalendar size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '30px', fontWeight: 700, color: '#111827' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 700, color: '#111827' }}>
                       {currentDorm ? eventCounts[currentDorm.id] : 0}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#6b7280', fontWeight: 500 }}>Events</div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: 500 }}>Events</div>
                   </div>
                 </div>
               </div>
@@ -448,15 +525,15 @@ function HomeContent() {
               </h2>
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                gap: '16px'
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '12px'
               }}>
                 <Link
                   href={currentDorm ? `/chat/${encodeURIComponent(currentDorm.id)}` : '/chat/global'}
                   style={{
                     background: 'white',
-                    borderRadius: '16px',
-                    padding: '24px',
+                    borderRadius: '12px',
+                    padding: '16px',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                     border: '1px solid #f3f4f6',
                     textDecoration: 'none',
@@ -472,21 +549,21 @@ function HomeContent() {
                     e.currentTarget.style.borderColor = '#f3f4f6';
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <div style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '40px',
+                      height: '40px',
                       background: '#e0e7ff',
-                      borderRadius: '12px',
+                      borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <FiMessageCircle size={24} color="#667eea" />
+                      <FiMessageCircle size={20} color="#667eea" />
                     </div>
-                    <span style={{ fontSize: '18px', fontWeight: 600, color: '#111827' }}>Join Chat</span>
+                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>Join Chat</span>
                   </div>
-                  <p style={{ fontSize: '14px', color: '#6b7280', marginLeft: '64px', margin: 0 }}>
+                  <p style={{ fontSize: '12px', color: '#6b7280', marginLeft: '52px', margin: 0 }}>
                     Connect with your dorm members
                   </p>
                 </Link>
@@ -495,8 +572,8 @@ function HomeContent() {
                   href={currentDorm ? `/events/${encodeURIComponent(currentDorm.id)}` : '/home'}
                   style={{
                     background: 'white',
-                    borderRadius: '16px',
-                    padding: '24px',
+                    borderRadius: '12px',
+                    padding: '16px',
                     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                     border: '1px solid #f3f4f6',
                     textDecoration: 'none',
@@ -512,21 +589,21 @@ function HomeContent() {
                     e.currentTarget.style.borderColor = '#f3f4f6';
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <div style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '40px',
+                      height: '40px',
                       background: '#d1fae5',
-                      borderRadius: '12px',
+                      borderRadius: '10px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}>
-                      <FiCalendar size={24} color="#10b981" />
+                      <FiCalendar size={20} color="#10b981" />
                     </div>
-                    <span style={{ fontSize: '18px', fontWeight: 600, color: '#111827' }}>See Events</span>
+                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>See Events</span>
                   </div>
-                  <p style={{ fontSize: '14px', color: '#6b7280', marginLeft: '64px', margin: 0 }}>
+                  <p style={{ fontSize: '12px', color: '#6b7280', marginLeft: '52px', margin: 0 }}>
                     View upcoming activities
                   </p>
                 </Link>
@@ -538,8 +615,8 @@ function HomeContent() {
               href={currentDorm ? `/events/create?dorm=${encodeURIComponent(currentDorm.id)}` : '/events/create'}
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '16px',
-                padding: '32px',
+                borderRadius: '12px',
+                padding: '20px',
                 color: 'white',
                 boxShadow: '0 10px 25px rgba(102, 126, 234, 0.3)',
                 textDecoration: 'none',
@@ -547,7 +624,9 @@ function HomeContent() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 transition: 'transform 0.2s',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flexWrap: 'wrap',
+                gap: '12px'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -557,24 +636,25 @@ function HomeContent() {
               }}
             >
               <div>
-                <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '8px', margin: 0 }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '4px', margin: 0 }}>
                   Create New Event
                 </h3>
-                <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.9)', margin: 0 }}>
+                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)', margin: 0 }}>
                   Organize activities and bring your dorm together
                 </p>
               </div>
               <div style={{
                 background: 'white',
                 color: '#667eea',
-                padding: '12px 32px',
-                borderRadius: '12px',
+                padding: '10px 20px',
+                borderRadius: '10px',
                 fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '6px',
+                fontSize: '14px'
               }}>
-                <FiPlus size={20} />
+                <FiPlus size={18} />
                 Create Event
               </div>
             </Link>
@@ -650,81 +730,6 @@ function HomeContent() {
         </div>
       </div>
 
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="mobile-menu-button"
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          width: '56px',
-          height: '56px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '50%',
-          border: 'none',
-          color: 'white',
-          fontSize: '24px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          zIndex: 1000,
-          alignItems: 'center',
-          justifyContent: 'center',
-          display: 'none'
-        }}
-        aria-label="Toggle menu"
-      >
-        ☰
-      </button>
-
-      {/* Mobile Menu Overlay */}
-      {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 998
-          }}
-        />
-      )}
-
-      <style jsx>{`
-        @media (max-width: 768px) {
-          div[style*="width: 80px"] {
-            position: fixed;
-            left: ${sidebarOpen ? '0' : '-80px'};
-            top: 0;
-            height: 100vh;
-            transition: left 0.3s ease;
-            z-index: 999;
-          }
-          div[style*="max-width: 1152px"] {
-            padding: 16px;
-          }
-          div[style*="gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'"] {
-            grid-template-columns: 1fr;
-          }
-          div[style*="gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))'"] {
-            grid-template-columns: 1fr;
-          }
-          input[style*="width: 256px"] {
-            width: 150px !important;
-          }
-          .mobile-menu-button {
-            display: flex !important;
-          }
-        }
-        @media (min-width: 769px) {
-          .mobile-menu-button {
-            display: none !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }
