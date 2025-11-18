@@ -251,4 +251,10 @@ input, textarea {
   }
 }
 
+/* Mobile responsive for home page sidebar */
+@media (max-width: 768px) {
+  /* Make sidebar smaller on mobile - these styles will be applied via inline styles in the component */
+  /* The component handles mobile responsiveness */
+}
+
 
