@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FiDownload, FiX } from 'react-icons/fi';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -20,135 +19,86 @@ export default function PWAInstallPrompt() {
       return;
     }
 
-    // Check if already installed on iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as unknown as { standalone?: boolean }).standalone;
-    if (isIOS && isInStandaloneMode) {
-      setIsInstalled(true);
-      return;
-    }
-
-    // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
-      // Show prompt after a delay (don't be too pushy)
-      setTimeout(() => {
-        // Check if user has dismissed before
-        const hasDismissed = localStorage.getItem('pwa-install-dismissed');
-        if (!hasDismissed) {
-          setShowPrompt(true);
-        }
-      }, 3000);
+      const promptEvent = e as BeforeInstallPromptEvent;
+      setDeferredPrompt(promptEvent);
+      setShowPrompt(true);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setShowPrompt(false);
+      setDeferredPrompt(null);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      // For iOS, show instructions
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        alert('To install this app on your iOS device:\n\n1. Tap the Share button\n2. Tap "Add to Home Screen"\n3. Tap "Add"');
-      }
-      return;
-    }
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === 'accepted') {
-      setShowPrompt(false);
-      setDeferredPrompt(null);
-    } else {
-      localStorage.setItem('pwa-install-dismissed', 'true');
+      setIsInstalled(true);
       setShowPrompt(false);
     }
+    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
-    localStorage.setItem('pwa-install-dismissed', 'true');
     setShowPrompt(false);
   };
 
-  if (isInstalled || !showPrompt) {
+  if (!showPrompt || isInstalled) {
     return null;
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '20px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      background: 'white',
-      borderRadius: '12px',
-      padding: '16px 20px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-      zIndex: 10000,
-      maxWidth: '90%',
-      width: '400px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      border: '1px solid #e5e7eb'
-    }}>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '4px', color: '#111827' }}>
-          Install Dormzy
+    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#404040] shadow-lg rounded-t-2xl p-6 z-50 border-t border-gray-200 dark:border-gray-700">
+      <div className="max-w-md mx-auto">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xl">
+              📱
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white">Install Dormzy</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Add to home screen for quick access</p>
+            </div>
+          </div>
+          <button
+            onClick={handleDismiss}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl"
+          >
+            ✕
+          </button>
         </div>
-        <div style={{ fontSize: '12px', color: '#6b7280' }}>
-          Add to home screen for quick access
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleDismiss}
+            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          >
+            Not Now
+          </button>
+          <button
+            onClick={handleInstall}
+            className="flex-1 px-4 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition flex items-center justify-center gap-2"
+          >
+            <span>⬇️</span>
+            Install
+          </button>
         </div>
       </div>
-      <button
-        onClick={handleInstallClick}
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          padding: '8px 16px',
-          fontSize: '14px',
-          fontWeight: 600,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          transition: 'transform 0.2s'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.05)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-        }}
-      >
-        <FiDownload size={16} />
-        Install
-      </button>
-      <button
-        onClick={handleDismiss}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#9ca3af',
-          cursor: 'pointer',
-          padding: '4px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-        aria-label="Dismiss"
-      >
-        <FiX size={18} />
-      </button>
     </div>
   );
 }

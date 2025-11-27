@@ -1,14 +1,7 @@
-import { collection, query, where, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
-
-export interface NotificationSubscription {
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-}
+import { subscribeToNotifications } from './firebaseMessaging';
 
 // Request notification permission and subscribe
 export async function requestNotificationPermission(): Promise<boolean> {
@@ -27,6 +20,10 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 
   const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    // Subscribe to FCM notifications
+    await subscribeToNotifications();
+  }
   return permission === 'granted';
 }
 
@@ -133,30 +130,56 @@ export async function notifyDormUsers(
   data?: Record<string, unknown>
 ): Promise<void> {
   try {
-    // Check if notifications are enabled for current user
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
-      return;
+    // Query all FCM tokens for users in this dorm
+    const tokensQuery = query(
+      collection(db, 'userTokens'),
+      where('dorm', '==', dormId)
+    );
+
+    const tokensSnapshot = await getDocs(tokensQuery);
+    const tokens: string[] = [];
+
+    tokensSnapshot.forEach((docSnapshot) => {
+      if (docSnapshot.data().fcmToken) {
+        tokens.push(docSnapshot.data().fcmToken);
+      }
+    });
+
+    if (tokens.length > 0) {
+      // Send to FCM backend
+      try {
+        await fetch('/api/send-notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tokens,
+            notification: {
+              title,
+              body,
+              icon: '/images/logo.png'
+            },
+            data: data || {},
+            dormId
+          })
+        });
+      } catch (fetchError) {
+        console.error('Error calling notification API:', fetchError);
+      }
     }
 
-    // Use service worker to show notification
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      await registration.showNotification(title, {
-        body,
-        icon: '/images/logo.png',
-        badge: '/images/logo.png',
-        data: data || {},
-        tag: `dorm-${dormId}`,
-        requireInteraction: false
-      });
-    } else {
-      // Fallback to browser notification
-      new Notification(title, {
-        body,
-        icon: '/images/logo.png',
-        badge: '/images/logo.png',
-        tag: `dorm-${dormId}`
-      });
+    // Also show local notification if permission granted
+    if (Notification.permission === 'granted') {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification(title, {
+          body,
+          icon: '/images/logo.png',
+          badge: '/images/logo.png',
+          data: data || {},
+          tag: `dorm-${dormId}`,
+          requireInteraction: false
+        });
+      }
     }
   } catch (error) {
     console.error('Error notifying dorm users:', error);
@@ -170,30 +193,51 @@ export async function notifyAllUsers(
   data?: Record<string, unknown>
 ): Promise<void> {
   try {
-    // Check if notifications are enabled
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
-      return;
+    // Query all FCM tokens
+    const tokensQuery = query(collection(db, 'userTokens'));
+    const tokensSnapshot = await getDocs(tokensQuery);
+    const tokens: string[] = [];
+
+    tokensSnapshot.forEach((docSnapshot) => {
+      if (docSnapshot.data().fcmToken) {
+        tokens.push(docSnapshot.data().fcmToken);
+      }
+    });
+
+    if (tokens.length > 0) {
+      // Send to FCM backend
+      try {
+        await fetch('/api/send-notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tokens,
+            notification: {
+              title,
+              body,
+              icon: '/images/logo.png'
+            },
+            data: data || {}
+          })
+        });
+      } catch (fetchError) {
+        console.error('Error calling notification API:', fetchError);
+      }
     }
 
-    // Use service worker to show notification
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      await registration.showNotification(title, {
-        body,
-        icon: '/images/logo.png',
-        badge: '/images/logo.png',
-        data: data || {},
-        tag: 'global',
-        requireInteraction: false
-      });
-    } else {
-      // Fallback to browser notification
-      new Notification(title, {
-        body,
-        icon: '/images/logo.png',
-        badge: '/images/logo.png',
-        tag: 'global'
-      });
+    // Also show local notification
+    if (Notification.permission === 'granted') {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification(title, {
+          body,
+          icon: '/images/logo.png',
+          badge: '/images/logo.png',
+          data: data || {},
+          tag: 'global',
+          requireInteraction: false
+        });
+      }
     }
   } catch (error) {
     console.error('Error notifying all users:', error);
