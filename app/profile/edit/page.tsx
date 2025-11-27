@@ -139,10 +139,6 @@ function EditProfileContent() {
   return (
     <div className="container" style={{ maxWidth: '600px', paddingTop: '2rem', paddingBottom: '2rem' }}>
       <BackButton href="/profile" />
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
 
       <div className="card">
         <h1 style={{ marginBottom: '1.5rem' }}>Edit Profile</h1>
