@@ -14,7 +14,7 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { ChatMessage, User, DormType } from '@/firebase/types';
+import { ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
 import { notifyAllUsers } from '@/utils/notifications';
@@ -100,28 +100,38 @@ export default function GlobalChatPage() {
     if (!newMessage.trim() || !currentUser || !userData) return;
 
     try {
-      await addDoc(collection(db, 'chatMessages'), {
-        dormId: 'Global',
-        userId: currentUser.uid,
-        userName: userData.displayName,
-        userPhoto: userData.photoURL || '',
-        message: newMessage.trim(),
-        replyTo: replyTo || null,
-        replyToMessage: replyTo ? replyToMessage : null,
-        timestamp: new Date(),
-        edited: false,
-        deleted: false
-      });
+      // If editing, update the message instead of creating new one
+      if (editingMessageId) {
+        await updateDoc(doc(db, 'chatMessages', editingMessageId), {
+          message: newMessage.trim(),
+          edited: true,
+          editedAt: new Date()
+        });
+        setEditingMessageId(null);
+      } else {
+        await addDoc(collection(db, 'chatMessages'), {
+          dormId: 'Global',
+          userId: currentUser.uid,
+          userName: userData.displayName,
+          userPhoto: userData.photoURL || '',
+          message: newMessage.trim(),
+          replyTo: replyTo || null,
+          replyToMessage: replyTo ? replyToMessage : null,
+          timestamp: new Date(),
+          edited: false,
+          deleted: false
+        });
 
-      // Send notification to all users
-      try {
-        await notifyAllUsers(
-          'New message in Global Chat',
-          `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
-          { type: 'message', url: '/chat/global' }
-        );
-      } catch (notifError) {
-        console.error('Error sending notification:', notifError);
+        // Send notification to all users
+        try {
+          await notifyAllUsers(
+            'New message in Global Chat',
+            `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
+            { type: 'message', url: '/chat/global' }
+          );
+        } catch (notifError) {
+          console.error('Error sending notification:', notifError);
+        }
       }
 
       setNewMessage('');
@@ -129,23 +139,7 @@ export default function GlobalChatPage() {
       setReplyToMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
-    }
-  }
-
-  async function handleEditMessage(messageId: string, currentMessage: string) {
-    if (!newMessage.trim()) return;
-
-    try {
-      await updateDoc(doc(db, 'chatMessages', messageId), {
-        message: newMessage.trim(),
-        edited: true,
-        editedAt: new Date()
-      });
-
-      setEditingMessageId(null);
-      setNewMessage('');
-    } catch (error) {
-      console.error('Error editing message:', error);
+      alert('Failed to send message. Please try again.');
     }
   }
 
@@ -159,6 +153,7 @@ export default function GlobalChatPage() {
       });
     } catch (error) {
       console.error('Error deleting message:', error);
+      alert('Failed to delete message. Please try again.');
     }
   }
 
@@ -429,10 +424,7 @@ export default function GlobalChatPage() {
       </div>
 
       <form 
-        onSubmit={editingMessageId ? (e) => {
-          e.preventDefault();
-          handleEditMessage(editingMessageId, '');
-        } : handleSendMessage}
+        onSubmit={handleSendMessage}
         style={{
           background: 'white',
           padding: '1rem',

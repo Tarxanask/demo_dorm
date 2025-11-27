@@ -74,6 +74,15 @@ export default function EventDetailsPage() {
           await updateDoc(eventRef, {
             participants: arrayRemove(currentUser.uid)
           });
+          // Refresh event data
+          const updatedDoc = await getDoc(eventRef);
+          if (updatedDoc.exists()) {
+            setEvent({
+              id: updatedDoc.id,
+              ...updatedDoc.data(),
+              createdAt: updatedDoc.data().createdAt?.toDate() || new Date()
+            } as Event);
+          }
         } else {
           // Check if event is residents-only and user is not a resident
           if (eventData.residentsOnly && userData.dorm !== eventData.dormId) {
@@ -103,21 +112,20 @@ export default function EventDetailsPage() {
           await updateDoc(eventRef, {
             participants: arrayUnion(currentUser.uid)
           });
-        }
-        
-        // Refresh event data
-        const updatedDoc = await getDoc(eventRef);
-        if (updatedDoc.exists()) {
-          const updatedEvent = {
-            id: updatedDoc.id,
-            ...updatedDoc.data(),
-            createdAt: updatedDoc.data().createdAt?.toDate() || new Date()
-          } as Event;
-          setEvent(updatedEvent);
+          // Refresh event data
+          const updatedDoc = await getDoc(eventRef);
+          if (updatedDoc.exists()) {
+            setEvent({
+              id: updatedDoc.id,
+              ...updatedDoc.data(),
+              createdAt: updatedDoc.data().createdAt?.toDate() || new Date()
+            } as Event);
+          }
         }
       }
     } catch (error) {
       console.error('Error joining event:', error);
+      alert('Failed to join/leave event. Please try again.');
     }
   }
 

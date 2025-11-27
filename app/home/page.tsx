@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { DormType, Event, User } from '@/firebase/types';
+import { DormType } from '@/firebase/types';
 import Link from 'next/link';
-import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHome, FiHash, FiLogOut } from 'react-icons/fi';
+import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHash, FiLogOut } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const DORMS: { id: DormType; name: string; color: string }[] = [
@@ -50,7 +50,6 @@ function HomeContent() {
     time: string;
     avatar: string;
   }>>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;

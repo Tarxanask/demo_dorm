@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { AuthProvider } from '@/contexts/AuthContext';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/firebase/config';
 import Link from 'next/link';
@@ -275,10 +274,6 @@ function EditProfileContent() {
 }
 
 export default function EditProfilePage() {
-  return (
-    <AuthProvider>
-      <EditProfileContent />
-    </AuthProvider>
-  );
+  return <EditProfileContent />;
 }
 

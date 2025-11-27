@@ -133,6 +133,7 @@ export default function EventsPage() {
       }
     } catch (error) {
       console.error('Error joining event:', error);
+      alert('Failed to join/leave event. Please try again.');
     }
   }
 
