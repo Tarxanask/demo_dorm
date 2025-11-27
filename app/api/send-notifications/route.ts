@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { ServiceAccount } from 'firebase-admin';
+import * as admin from 'firebase-admin';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,13 +14,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize Firebase Admin SDK
-    const admin = require('firebase-admin');
-
     if (!admin.apps.length) {
-      const serviceAccount = {
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') || '';
+      const serviceAccount: ServiceAccount = {
+        projectId: process.env.FIREBASE_PROJECT_ID!,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+        privateKey: privateKey,
       };
 
       admin.initializeApp({
@@ -26,13 +27,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const message = {
+    // Get messaging service
+    const messaging = admin.messaging();
+
+    // Send to all tokens using sendEachForMulticast which is properly typed
+    const response = await messaging.sendEachForMulticast({
+      tokens,
       notification: {
         title: notification.title,
         body: notification.body,
-        imageUrl: notification.icon,
       },
-      data: data || {},
+      data: (data || {}) as Record<string, string>,
       webpush: {
         fcmOptions: {
           link: '/',
@@ -45,19 +50,13 @@ export async function POST(request: NextRequest) {
           tag: 'dormzy',
         },
       },
-    };
-
-    // Send to all tokens
-    const response = await admin.messaging().sendMulticast({
-      ...message,
-      tokens,
     });
 
     console.log(`Sent ${response.successCount} notifications, ${response.failureCount} failed`);
 
     // Log failures if any
     if (response.failureCount > 0) {
-      response.responses.forEach((resp: any, idx: number) => {
+      response.responses.forEach((resp, idx) => {
         if (!resp.success) {
           console.error(`Failed to send to token ${idx}:`, resp.error);
         }

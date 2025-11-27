@@ -19,6 +19,12 @@ export default function PWAInstallPrompt() {
       return;
     }
 
+    // Check if already dismissed
+    const dismissed = localStorage.getItem('pwa-dismissed');
+    if (dismissed === 'true') {
+      return;
+    }
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       const promptEvent = e as BeforeInstallPromptEvent;
@@ -30,6 +36,7 @@ export default function PWAInstallPrompt() {
       setIsInstalled(true);
       setShowPrompt(false);
       setDeferredPrompt(null);
+      localStorage.setItem('pwa-dismissed', 'true');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -50,12 +57,14 @@ export default function PWAInstallPrompt() {
     if (outcome === 'accepted') {
       setIsInstalled(true);
       setShowPrompt(false);
+      localStorage.setItem('pwa-dismissed', 'true');
     }
     setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
+    localStorage.setItem('pwa-dismissed', 'true');
   };
 
   if (!showPrompt || isInstalled) {
@@ -63,39 +72,71 @@ export default function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#404040] shadow-lg rounded-t-2xl p-6 z-50 border-t border-gray-200 dark:border-gray-700">
-      <div className="max-w-md mx-auto">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xl">
-              📱
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white">Install Dormzy</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Add to home screen for quick access</p>
-            </div>
+    <div style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      background: '#303030',
+      borderTop: '1px solid #444',
+      padding: '16px',
+      zIndex: 9999,
+      boxShadow: '0 -4px 12px rgba(0,0,0,0.3)'
+    }}>
+      <div style={{
+        maxWidth: '600px',
+        margin: '0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '12px'
+      }}>
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontWeight: 600,
+            fontSize: '16px',
+            marginBottom: '4px',
+            color: '#fff'
+          }}>
+            Install Dormzy
           </div>
-          <button
-            onClick={handleDismiss}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl"
-          >
-            ✕
-          </button>
+          <div style={{
+            fontSize: '14px',
+            color: '#aaa'
+          }}>
+            Add to home screen for quick access
+          </div>
         </div>
-
-        <div className="flex gap-3">
-          <button
-            onClick={handleDismiss}
-            className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-          >
-            Not Now
-          </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button
             onClick={handleInstall}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium transition flex items-center justify-center gap-2"
+            style={{
+              background: '#667eea',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 20px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
           >
-            <span>⬇️</span>
-            Install
+            ⬇️ Install
+          </button>
+          <button
+            onClick={handleDismiss}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#888',
+              cursor: 'pointer',
+              padding: '8px',
+              fontSize: '20px',
+              lineHeight: 1
+            }}
+          >
+            ✕
           </button>
         </div>
       </div>

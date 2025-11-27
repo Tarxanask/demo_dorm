@@ -1,5 +1,5 @@
 import { initializeApp, getApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, Messaging, isSupported } from 'firebase/messaging';
 import { db } from '@/firebase/config';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -8,6 +8,13 @@ let messaging: Messaging | null = null;
 export async function initializeFirebaseMessaging() {
   try {
     if (typeof window === 'undefined') {
+      return null;
+    }
+
+    // Check if messaging is supported
+    const messagingSupported = await isSupported();
+    if (!messagingSupported) {
+      console.log('Firebase Messaging not supported in this browser');
       return null;
     }
 
@@ -20,6 +27,9 @@ export async function initializeFirebaseMessaging() {
       console.log('Service Workers not supported');
       return null;
     }
+
+    // Wait for service worker to be ready
+    await navigator.serviceWorker.ready;
 
     messaging = getMessaging();
     console.log('Firebase Messaging initialized');

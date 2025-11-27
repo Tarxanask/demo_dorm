@@ -2,12 +2,10 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { initializeFirebaseMessaging, setupMessageListener } from '@/utils/firebaseMessaging';
 
 export default function NotificationHandler() {
   const router = useRouter();
-  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
