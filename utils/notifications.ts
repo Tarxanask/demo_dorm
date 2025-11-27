@@ -147,8 +147,7 @@ export async function notifyDormUsers(
         badge: '/images/logo.png',
         data: data || {},
         tag: `dorm-${dormId}`,
-        requireInteraction: false,
-        vibrate: [200, 100, 200]
+        requireInteraction: false
       });
     } else {
       // Fallback to browser notification
