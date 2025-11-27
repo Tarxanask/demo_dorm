@@ -184,8 +184,7 @@ export async function notifyAllUsers(
         badge: '/images/logo.png',
         data: data || {},
         tag: 'global',
-        requireInteraction: false,
-        vibrate: [200, 100, 200]
+        requireInteraction: false
       });
     } else {
       // Fallback to browser notification
