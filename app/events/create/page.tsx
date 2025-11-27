@@ -10,13 +10,16 @@ import { db, storage } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
 import { notifyDormUsers } from '@/utils/notifications';
 import { EVENT_IMAGES } from '../eventImages';
+import SpiderManLoader from '@/components/SpiderManLoader';
+import BackButton from '@/components/BackButton';
 
 const DORMS: { id: DormType; name: string }[] = [
   { id: 'KTU', name: 'KTU' },
   { id: 'LSMU', name: 'LSMU' },
   { id: 'Solo Society', name: 'Solo Society' },
   { id: 'Baltija VDU', name: 'Baltija VDU' },
-  { id: 'Other Dorms', name: 'Other Dorms' }
+  { id: 'Other Dorms', name: 'Other Dorms' },
+  { id: 'General Community', name: 'General Community' }
 ];
 
 function CreateEventContent() {
@@ -66,6 +69,9 @@ function CreateEventContent() {
       return;
     }
 
+    // For General Community events, always set residentsOnly to false
+    const finalResidentsOnly = dormId === 'General Community' ? false : residentsOnly;
+
     if (desiredParticipants > maxParticipants) {
       setError('Desired participants cannot exceed max participants');
       return;
@@ -101,7 +107,7 @@ function CreateEventContent() {
         time,
         desiredParticipants,
         maxParticipants,
-        residentsOnly,
+        residentsOnly: finalResidentsOnly,
         participants: [],
         createdAt: new Date()
       };
@@ -111,9 +117,26 @@ function CreateEventContent() {
         eventData.imageURL = imageURL;
       }
 
-      await addDoc(collection(db, 'events'), eventData);
+      try {
+        await addDoc(collection(db, 'events'), eventData);
+        setLoading(false);
 
-      // Send notification to dorm users
+        // Show success message
+        alert('🎉 Event created successfully!');
+        
+        // Redirect based on dormId  
+        if (dormId === 'General Community') {
+          router.push('/events/general');
+        } else {
+          router.push(`/events/${dormId}`);
+        }
+      } catch (error) {
+        console.error('Error creating event:', error);
+        setError('Failed to create event. Please try again.');
+        setLoading(false);
+      }
+
+      // Send notification to dorm users (async, don't wait for it)
       try {
         await notifyDormUsers(
           dormId,
@@ -124,8 +147,6 @@ function CreateEventContent() {
       } catch (notifError) {
         console.error('Error sending notification:', notifError);
       }
-
-      router.push(`/events/${dormId}`);
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string };
       // Provide user-friendly error messages
@@ -154,41 +175,51 @@ function CreateEventContent() {
     }
   }
 
-  if (authLoading || !userData) {
+  if (authLoading || !userData || loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        color: '#ffffff',
-        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)'
       }}>
-        Loading...
+        <SpiderManLoader size="medium" />
       </div>
     );
   }
 
   return (
-    <div className="container" style={{ maxWidth: '600px', paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href="/home" 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
+    <div style={{ 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <BackButton href="/home" />
 
-      <div className="card">
-        <h1 style={{ marginBottom: '1.5rem' }}>Create Event</h1>
+        <div className="card" style={{
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '24px',
+          padding: '2.5rem',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+          color: '#ffffff'
+        }}>
+          <h1 style={{ 
+            marginBottom: '2rem',
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            textAlign: 'center'
+          }}>
+            ✨ Create Event
+          </h1>
 
         {error && (
           <div style={{ 
@@ -215,7 +246,7 @@ function CreateEventContent() {
                 <option key={d.id} value={d.id}>{d.name}</option>
               ))}
             </select>
-            {dormId && userData.dorm !== dormId && (
+            {dormId && userData.dorm !== dormId && dormId !== 'General Community' && (
               <div style={{ 
                 background: '#fff3cd',
                 border: '1px solid #ffc107',
@@ -285,7 +316,7 @@ function CreateEventContent() {
             <label>Event Image</label>
             <div style={{ marginBottom: '1rem' }}>
               <div style={{ marginBottom: '1rem' }}>
-                <strong>Choose from pre-selected images:</strong>
+                <strong style={{ color: '#0ea5e9' }}>Choose from pre-selected images:</strong>
                 <div style={{ 
                   display: 'grid', 
                   gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
@@ -353,7 +384,7 @@ function CreateEventContent() {
                 paddingTop: '1rem', 
                 borderTop: '1px solid #e0e0e0' 
               }}>
-                <strong>Or upload your own image:</strong>
+                <strong style={{ color: '#0ea5e9' }}>Or upload your own image:</strong>
                 <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   {imagePreview && (
                     <img 
@@ -462,48 +493,51 @@ function CreateEventContent() {
             </div>
           </div>
 
-          <div className="input-group">
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.75rem',
-              cursor: 'pointer',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <input
-                type="checkbox"
-                checked={residentsOnly}
-                onChange={(e) => setResidentsOnly(e.target.checked)}
-                style={{ 
-                  width: '20px', 
-                  height: '20px', 
-                  cursor: 'pointer',
-                  accentColor: '#667eea'
-                }}
-              />
-              <span style={{ fontWeight: '500', color: '#1f2937' }}>
-                🔒 Residents only
-              </span>
-            </label>
-            {residentsOnly && (
-              <div style={{ 
-                marginTop: '0.5rem',
+          {/* Residents Only Checkbox - hidden for General Community */}
+          {dormId !== 'General Community' && (
+            <div className="input-group">
+              <label style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.75rem',
+                cursor: 'pointer',
                 padding: '0.75rem',
-                background: '#e6f2ff',
-                border: '1px solid #667eea',
                 borderRadius: '8px',
-                fontSize: '0.9rem',
-                color: '#004085'
-              }}>
-                This event will only be visible and joinable by residents of the selected dorm.
-              </div>
-            )}
-          </div>
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <input
+                  type="checkbox"
+                  checked={residentsOnly}
+                  onChange={(e) => setResidentsOnly(e.target.checked)}
+                  style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    cursor: 'pointer',
+                    accentColor: '#667eea'
+                  }}
+                />
+                <span style={{ fontWeight: '500', color: '#1f2937' }}>
+                  🔒 Residents only
+                </span>
+              </label>
+              {residentsOnly && (
+                <div style={{ 
+                  marginTop: '0.5rem',
+                  padding: '0.75rem',
+                  background: '#e6f2ff',
+                  border: '1px solid #667eea',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  color: '#004085'
+                }}>
+                  This event will only be visible and joinable by residents of the selected dorm.
+                </div>
+              )}
+            </div>
+          )}
 
           <button 
             type="submit" 
@@ -514,6 +548,7 @@ function CreateEventContent() {
             {loading ? 'Creating event...' : 'Create Event'}
           </button>
         </form>
+        </div>
       </div>
     </div>
   );

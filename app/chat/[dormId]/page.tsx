@@ -19,6 +19,8 @@ import { DormType, ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
 import { notifyDormUsers } from '@/utils/notifications';
+import BackButton from '@/components/BackButton';
+import AnimatedSendButton from '@/components/AnimatedSendButton';
 
 function ChatPageContent() {
   const params = useParams();
@@ -44,7 +46,9 @@ function ChatPageContent() {
       'KTU': '/images_dorms/KTU.png',
       'Other Dorms': '/images_dorms/Baltija VDU.png',
       'Solo Society': '/images_dorms/SoloSociety.png',
-      'Baltija VDU': '/images_dorms/Other dorm.png'
+      'Baltija VDU': '/images_dorms/Other dorm.png',
+      'General Community': '/images_dorms/GE.png',
+      'Global': '/images_dorms/GE.png'
     };
     return logoMap[dorm] || '/images_dorms/Other dorm.png';
   };
@@ -259,23 +263,16 @@ function ChatPageContent() {
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
         gap: '1rem'
       }}>
-        <img 
-          src="/images/logo.png" 
-          alt="Dormzy" 
-          style={{
-            width: '60px',
-            height: '60px',
-            borderRadius: '12px',
-            objectFit: 'cover'
-          }}
-        />
+        <div style={{ fontSize: '60px', animation: 'float 2s ease-in-out infinite' }}>💬</div>
         <div style={{ 
           color: '#ffffff',
-          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          fontSize: '1.1rem'
         }}>
-          Loading...
+          Loading chat...
         </div>
       </div>
     );
@@ -286,88 +283,131 @@ function ChatPageContent() {
       display: 'flex', 
       flexDirection: 'column', 
       height: '100dvh',
-      background: '#f5f5f5',
+      background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
       overflow: 'hidden'
     }}>
+      {/* Header */}
       <div style={{ 
-        background: 'white', 
-        padding: '0.75rem 1rem', 
-        borderBottom: '1px solid #e0e0e0',
+        background: 'rgba(48, 48, 48, 0.95)', 
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        padding: '1rem', 
         display: 'flex',
         alignItems: 'center',
-        gap: '0.75rem',
-        flexShrink: 0
+        gap: '1rem',
+        flexShrink: 0,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
       }}>
-        <Link 
-          href="/home" 
-          style={{ 
-            color: '#0070f3',
-            fontSize: '1.5rem',
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            flexShrink: 0,
-            minWidth: '32px'
-          }}
-        >
-          <i className="bi bi-arrow-left-circle-fill"></i>
-        </Link>
+        <BackButton href="/home" />
+        
         <Link
           href={`/dorm/${encodeURIComponent(dormId)}`}
           style={{ textDecoration: 'none', flexShrink: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <img 
-            src={getDormLogo(dormId)} 
-            alt={dormId}
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              objectFit: 'cover',
-              flexShrink: 0,
-              cursor: 'pointer',
-              transition: 'transform 0.2s',
-              border: '2px solid #e0e0e0'
-            }}
-            onMouseEnter={(e) => {
-              if (window.innerWidth > 768) {
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          />
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '16px',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid rgba(255,255,255,0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            overflow: 'hidden',
+            position: 'relative'
+          }}
+          onMouseEnter={(e) => {
+            if (window.innerWidth > 768) {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(14, 165, 233, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          >
+            <img 
+              src={getDormLogo(dormId)} 
+              alt={dormId}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '16px'
+              }}
+            />
+          </div>
         </Link>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dormId}</h2>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
-            {memberCount} {memberCount === 1 ? 'member' : 'members'}
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: '1.2rem', 
+            fontWeight: '700', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis', 
+            whiteSpace: 'nowrap',
+            color: '#ffffff',
+            background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            {dormId}
+          </h2>
+          <p style={{ 
+            margin: 0, 
+            fontSize: '0.85rem', 
+            color: 'rgba(255,255,255,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span style={{ color: '#22c55e' }}>●</span>
+            {dormId === 'General Community' 
+              ? 'Connect with the entire Kaunas community'
+              : `${memberCount} ${memberCount === 1 ? 'member' : 'members'} online`
+            }
           </p>
         </div>
       </div>
 
+      {/* Messages Container */}
       <div 
         style={{ 
           flex: 1, 
           overflowY: 'auto', 
           overflowX: 'hidden',
-          padding: '0.75rem',
+          padding: '1.5rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.75rem',
+          gap: '1rem',
           WebkitOverflowScrolling: 'touch',
-          minHeight: 0
+          minHeight: 0,
+          background: 'transparent'
         }}
       >
         {messages.length === 0 ? (
           <div style={{
             textAlign: 'center',
-            padding: '2rem',
-            color: '#666'
+            padding: '3rem 1rem',
+            color: 'rgba(255,255,255,0.6)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1rem'
           }}>
-            <p>No messages yet. Start the conversation!</p>
+            <div style={{ fontSize: '4rem', opacity: 0.5 }}>💬</div>
+            <div>
+              <p style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0' }}>No messages yet</p>
+              <p style={{ fontSize: '0.9rem', opacity: 0.7, margin: 0 }}>Start the conversation!</p>
+            </div>
           </div>
         ) : (
           messages.map((message, index) => {
@@ -459,14 +499,21 @@ function ChatPageContent() {
               )}
 
               <div style={{
-                background: isOwnMessage ? '#0070f3' : 'white',
-                color: isOwnMessage ? 'white' : '#333',
-                padding: '0.75rem 1rem',
-                borderRadius: '12px',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                background: isOwnMessage 
+                  ? 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%)'
+                  : 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                color: isOwnMessage ? 'white' : '#ffffff',
+                padding: '1rem 1.25rem',
+                borderRadius: isOwnMessage ? '20px 20px 6px 20px' : '20px 20px 20px 6px',
+                boxShadow: isOwnMessage 
+                  ? '0 8px 25px rgba(14, 165, 233, 0.3)'
+                  : '0 8px 25px rgba(0, 0, 0, 0.2)',
                 flex: 1,
                 position: 'relative',
-                opacity: message.deleted ? 0.6 : 1
+                opacity: message.deleted ? 0.6 : 1,
+                border: isOwnMessage ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                transition: 'all 0.3s ease'
               }}>
                 {showName && !isOwnMessage && (
                   <Link
@@ -648,39 +695,52 @@ function ChatPageContent() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Edit Message Banner */}
       {editingMessageId && (
         <div style={{
-          background: '#fff3cd',
-          padding: '0.75rem',
-          borderTop: '1px solid #e0e0e0',
+          background: 'rgba(251, 191, 36, 0.2)',
+          backdropFilter: 'blur(10px)',
+          padding: '1rem',
+          borderTop: '1px solid rgba(251, 191, 36, 0.3)',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          color: '#fbbf24'
         }}>
-          <div style={{ fontSize: '0.85rem', color: '#856404' }}>
-            ✏️ Editing message
+          <div style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>✏️</span> Editing message
           </div>
           <button
             onClick={handleCancelEdit}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+            style={{
+              padding: '0.5rem 1rem',
+              fontSize: '0.9rem',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              cursor: 'pointer'
+            }}
           >
             Cancel
           </button>
         </div>
       )}
 
+      {/* Reply Banner */}
       {replyTo && (
         <div style={{
-          background: '#e6f2ff',
-          padding: '0.75rem',
-          borderTop: '1px solid #e0e0e0',
+          background: 'rgba(14, 165, 233, 0.2)',
+          backdropFilter: 'blur(10px)',
+          padding: '1rem',
+          borderTop: '1px solid rgba(14, 165, 233, 0.3)',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          color: '#0ea5e9'
         }}>
           <div>
-            <div style={{ fontSize: '0.85rem', color: '#666' }}>Replying to:</div>
+            <div style={{ fontSize: '0.85rem', opacity: 0.8, marginBottom: '0.25rem' }}>Replying to:</div>
             <div style={{ fontSize: '0.9rem' }}>{replyToMessage}</div>
           </div>
           <button
@@ -688,22 +748,31 @@ function ChatPageContent() {
               setReplyTo(null);
               setReplyToMessage('');
             }}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
+            style={{
+              padding: '0.5rem 1rem',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              cursor: 'pointer'
+            }}
           >
             Cancel
           </button>
         </div>
       )}
 
+      {/* Message Input */}
       <form onSubmit={handleSendMessage} style={{
-        background: 'white',
-        padding: '0.75rem',
-        borderTop: '1px solid #e0e0e0',
+        background: 'rgba(48, 48, 48, 0.95)',
+        backdropFilter: 'blur(20px)',
+        padding: '1.25rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
-        gap: '0.5rem',
+        gap: '1rem',
         alignItems: 'center',
-        flexShrink: 0
+        flexShrink: 0,
+        boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.3)'
       }}>
         <input
           type="text"
@@ -712,29 +781,39 @@ function ChatPageContent() {
           placeholder={editingMessageId ? "Edit your message..." : "Type a message..."}
           style={{
             flex: 1,
-            padding: '0.75rem 1rem',
-            border: '2px solid #e0e0e0',
-            borderRadius: '24px',
+            padding: '1rem 1.25rem',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '25px',
             fontSize: '16px',
-            minHeight: '44px',
+            minHeight: '50px',
             WebkitAppearance: 'none',
             appearance: 'none',
-            outline: 'none'
+            outline: 'none',
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            color: '#ffffff',
+            transition: 'all 0.3s ease'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#0ea5e9';
+            e.target.style.boxShadow = '0 0 0 3px rgba(14, 165, 233, 0.1)';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            e.target.style.boxShadow = 'none';
           }}
         />
-        <button
-          type="submit"
-          className="btn btn-primary"
-          style={{ 
-            borderRadius: '24px', 
-            padding: '0.75rem 1.25rem',
-            minWidth: '60px',
-            minHeight: '44px',
-            flexShrink: 0
-          }}
-        >
-          {editingMessageId ? 'Save' : 'Send'}
-        </button>
+        <AnimatedSendButton 
+          onClick={(e) => {
+            e?.preventDefault();
+            const form = e?.currentTarget?.closest('form');
+            if (form) {
+              const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+              form.dispatchEvent(submitEvent);
+            }
+          }} 
+          disabled={!newMessage.trim()}
+        />
       </form>
     </div>
   );

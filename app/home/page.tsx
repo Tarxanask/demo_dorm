@@ -7,7 +7,7 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { db } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
 import Link from 'next/link';
-import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHash, FiLogOut } from 'react-icons/fi';
+import { FiUsers, FiMessageCircle, FiCalendar, FiPlus, FiHash } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const DORMS: { id: DormType; name: string; color: string }[] = [
@@ -15,7 +15,8 @@ const DORMS: { id: DormType; name: string; color: string }[] = [
   { id: 'LSMU', name: 'LSMU', color: '#10b981' },
   { id: 'Solo Society', name: 'Solo Society', color: '#8b5cf6' },
   { id: 'Baltija VDU', name: 'Baltija VDU', color: '#f97316' },
-  { id: 'Other Dorms', name: 'Other Dorms', color: '#ec4899' }
+  { id: 'Other Dorms', name: 'Other Dorms', color: '#ec4899' },
+  { id: 'General Community', name: 'General Community', color: '#06b6d4' }
 ];
 
 function HomeContent() {
@@ -28,21 +29,27 @@ function HomeContent() {
     'LSMU': 0,
     'Solo Society': 0,
     'Baltija VDU': 0,
-    'Other Dorms': 0
+    'Other Dorms': 0,
+    'General Community': 0,
+    'Global': 0
   });
   const [eventCounts, setEventCounts] = useState<Record<DormType, number>>({
     'KTU': 0,
     'LSMU': 0,
     'Solo Society': 0,
     'Baltija VDU': 0,
-    'Other Dorms': 0
+    'Other Dorms': 0,
+    'General Community': 0,
+    'Global': 0
   });
   const [messageCounts, setMessageCounts] = useState<Record<DormType, number>>({
     'KTU': 0,
     'LSMU': 0,
     'Solo Society': 0,
     'Baltija VDU': 0,
-    'Other Dorms': 0
+    'Other Dorms': 0,
+    'General Community': 0,
+    'Global': 0
   });
   const [recentActivity, setRecentActivity] = useState<Array<{
     user: string;
@@ -72,13 +79,13 @@ function HomeContent() {
     async function fetchStats() {
       // Fetch member counts
       const counts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
       const eventCounts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
       const msgCounts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
 
       for (const dorm of DORMS) {
@@ -157,7 +164,7 @@ function HomeContent() {
     <div style={{ 
       display: 'flex', 
       height: '100vh', 
-      background: '#f5f5f5',
+      background: '#303030',
       overflow: 'hidden'
     }}>
       {/* Left Sidebar - Discord Style - Always Visible */}
@@ -203,6 +210,38 @@ function HomeContent() {
           }}
         >
           <FiMessageCircle size={24} />
+        </Link>
+
+        {/* Global Events Icon */}
+        <Link 
+          href="/events/general"
+          style={{
+            width: '48px',
+            height: '48px',
+            background: pathname === '/events/general' ? '#667eea' : 'transparent',
+            borderRadius: pathname === '/events/general' ? '12px' : '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            textDecoration: 'none'
+          }}
+          onMouseEnter={(e) => {
+            if (pathname !== '/events/general') {
+              e.currentTarget.style.background = '#2a2a2a';
+              e.currentTarget.style.borderRadius = '12px';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (pathname !== '/events/general') {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderRadius = '24px';
+            }
+          }}
+        >
+          <FiCalendar size={24} />
         </Link>
         
         <div style={{ width: '32px', height: '2px', background: '#2a2a2a', borderRadius: '1px' }}></div>
@@ -267,8 +306,8 @@ function HomeContent() {
         {/* Top Bar */}
         <div style={{
           height: '56px',
-          background: 'white',
-          borderBottom: '1px solid #e5e7eb',
+          background: '#404040',
+          borderBottom: '1px solid #555555',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -276,8 +315,8 @@ function HomeContent() {
           flexShrink: 0
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <FiHash size={20} color="#9ca3af" />
-            <span style={{ fontSize: '18px', fontWeight: 600, color: '#111827' }}>
+            <FiHash size={20} color="#cccccc" />
+            <span style={{ fontSize: '18px', fontWeight: 600, color: '#ffffff' }}>
               {currentDorm?.name || 'Home'}
             </span>
           </div>
@@ -339,64 +378,6 @@ function HomeContent() {
                 </Link>
               </>
             )}
-            <div style={{ width: '1px', height: '24px', background: '#e5e7eb', margin: '0 8px' }}></div>
-            <button 
-              onClick={() => logout()}
-              style={{
-                width: '36px',
-                height: '36px',
-                background: 'transparent',
-                border: 'none',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'background 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#f3f4f6';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
-              title="Logout"
-            >
-              <FiLogOut size={20} color="#6b7280" />
-            </button>
-            <Link 
-              href="/profile"
-              style={{
-                width: '36px',
-                height: '36px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontWeight: 'bold',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                transition: 'transform 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.displayName}
-                  style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-                />
-              ) : (
-                userData.displayName.charAt(0).toUpperCase()
-              )}
-            </Link>
           </div>
         </div>
 
@@ -555,7 +536,10 @@ function HomeContent() {
                     <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>Join Chat</span>
                   </div>
                   <p style={{ fontSize: '12px', color: '#6b7280', marginLeft: '52px', margin: 0 }}>
-                    Connect with your dorm members
+                    {currentDorm?.id === 'General Community'
+                      ? 'Connect with community members'
+                      : 'Connect with your dorm members'
+                    }
                   </p>
                 </Link>
                 
@@ -631,7 +615,10 @@ function HomeContent() {
                   Create New Event
                 </h3>
                 <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)', margin: 0 }}>
-                  Organize activities and bring your dorm together
+                  {currentDorm?.id === 'General Community' 
+                    ? 'Organize activities and bring the community together'
+                    : 'Organize activities and bring your dorm together'
+                  }
                 </p>
               </div>
               <div style={{

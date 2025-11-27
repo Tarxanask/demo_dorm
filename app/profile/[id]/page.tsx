@@ -7,6 +7,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { User } from '@/firebase/types';
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 export default function ProfilePage() {
   const params = useParams();
@@ -67,21 +68,7 @@ export default function ProfilePage() {
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href="/home" 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
+      <BackButton href="/home" />
 
       <div className="card">
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>

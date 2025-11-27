@@ -7,6 +7,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { DormType, User } from '@/firebase/types';
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 export default function MembersPage() {
   const params = useParams();
@@ -45,44 +46,81 @@ export default function MembersPage() {
     return (
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        color: '#ffffff',
-        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+        gap: '1rem'
       }}>
-        Loading...
+        <div style={{ fontSize: '60px', animation: 'float 2s ease-in-out infinite' }}>👥</div>
+        <div style={{ 
+          color: '#ffffff',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          fontSize: '1.1rem'
+        }}>
+          Loading members...
+        </div>
       </div>
     );
   }
 
   if (!dormId) {
-    return <div>Dorm not found</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+        color: '#ffffff',
+        fontSize: '1.1rem'
+      }}>
+        Dorm not found
+      </div>
+    );
   }
 
   return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href={`/dorm/${encodeURIComponent(dormId)}`} 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
+    <div style={{ 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <BackButton href={`/dorm/${encodeURIComponent(dormId)}`} />
 
-      <div className="card">
-        <h1 style={{ marginBottom: '1.5rem' }}>All Members ({members.length})</h1>
+        <div className="card" style={{
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '24px',
+          padding: '2.5rem',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+          color: '#ffffff'
+        }}>
+        <h1 style={{ 
+          marginBottom: '2rem',
+          fontSize: '2.5rem',
+          fontWeight: '700',
+          background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          textAlign: 'center'
+        }}>
+          👥 All Members ({members.length})
+        </h1>
 
         {members.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666', padding: '2rem' }}>No members found</p>
+          <p style={{ 
+            textAlign: 'center', 
+            color: 'rgba(255,255,255,0.6)', 
+            padding: '3rem',
+            fontSize: '1.1rem'
+          }}>
+            No members found
+          </p>
         ) : (
           <div style={{ 
             display: 'grid', 
@@ -96,20 +134,25 @@ export default function MembersPage() {
                 style={{ textDecoration: 'none' }}
               >
                 <div style={{
-                  padding: '1rem',
-                  background: '#f5f5f5',
-                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
                   textAlign: 'center',
-                  transition: 'transform 0.2s',
-                  cursor: 'pointer'
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)'
                 }}
                 onMouseEnter={(e) => {
                   if (window.innerWidth > 768) {
-                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.transform = 'scale(1.05) translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 12px 35px rgba(14, 165, 233, 0.3)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.2)';
                 }}
                 >
                   {member.photoURL ? (
@@ -133,20 +176,21 @@ export default function MembersPage() {
                       width: '100px',
                       height: '100px',
                       borderRadius: '50%',
-                      background: '#ccc',
-                      margin: '0 auto 0.5rem'
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      margin: '0 auto 0.5rem',
+                      border: '2px solid rgba(255, 255, 255, 0.3)'
                     }} />
                   )}
-                  <div style={{ fontWeight: '600', marginBottom: '0.25rem', color: '#333' }}>
+                  <div style={{ fontWeight: '600', marginBottom: '0.25rem', color: '#ffffff' }}>
                     {member.displayName}
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', marginBottom: '0.5rem' }}>
                     {member.faculty}
                   </div>
                   {member.hobbies && member.hobbies.length > 0 && (
                     <div style={{ 
                       fontSize: '0.8rem', 
-                      color: '#888',
+                      color: 'rgba(255,255,255,0.6)',
                       marginBottom: '0.5rem'
                     }}>
                       {member.hobbies.slice(0, 3).join(', ')}
@@ -157,6 +201,7 @@ export default function MembersPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

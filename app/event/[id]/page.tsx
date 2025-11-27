@@ -8,6 +8,7 @@ import { db } from '@/firebase/config';
 import { Event, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import BackButton from '@/components/BackButton';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -154,13 +155,21 @@ export default function EventDetailsPage() {
     return (
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        color: '#ffffff',
-        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+        gap: '1rem'
       }}>
-        Loading...
+        <div style={{ fontSize: '60px', animation: 'float 2s ease-in-out infinite' }}>🎉</div>
+        <div style={{ 
+          color: '#ffffff',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          fontSize: '1.1rem'
+        }}>
+          Loading event...
+        </div>
       </div>
     );
   }
@@ -181,24 +190,24 @@ export default function EventDetailsPage() {
   };
 
   return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href={`/events/${encodeURIComponent(event.dormId)}`} 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
+    <div style={{ 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <BackButton href={`/events/${encodeURIComponent(event.dormId)}`} />
 
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+        <div className="card" style={{ 
+          marginBottom: '1.5rem',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '24px',
+          padding: '2.5rem',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+          color: '#ffffff'
+        }}>
         {event.imageURL && (
           <img 
             src={event.imageURL} 
@@ -212,12 +221,14 @@ export default function EventDetailsPage() {
             }}
           />
         )}
-        <h1 style={{ marginBottom: '1rem' }}>{event.title}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0 }}>{event.title}</h1>
+        </div>
         
         <div style={{ marginBottom: '1rem', color: '#666' }}>
           <div><strong>Dorm:</strong> {event.dormId}</div>
           <div><strong>Host:</strong> {event.hostName}</div>
-          {!event.isHostResident && (
+          {!event.isHostResident && event.dormId !== 'General Community' && (
             <div style={{ 
               background: '#fff3cd',
               border: '1px solid #ffc107',
@@ -252,7 +263,7 @@ export default function EventDetailsPage() {
               <span> (Desired: {event.desiredParticipants})</span>
             )}
           </div>
-          {event.residentsOnly && (
+          {event.residentsOnly && event.dormId !== 'General Community' && (
             <div style={{ color: '#0070f3', marginTop: '0.5rem' }}>
               🔒 Residents only event
             </div>
@@ -265,7 +276,7 @@ export default function EventDetailsPage() {
         </div>
 
         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-          {!canJoinEvent() && event.residentsOnly ? (
+          {!canJoinEvent() && event.residentsOnly && event.dormId !== 'General Community' ? (
             <button
               disabled
               className="btn btn-secondary"
@@ -300,7 +311,12 @@ export default function EventDetailsPage() {
         </h2>
 
         {participants.length === 0 ? (
-          <p style={{ color: '#666', textAlign: 'center' }}>No participants yet</p>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.6)', 
+            textAlign: 'center',
+            fontSize: '1rem',
+            padding: '2rem'
+          }}>No participants yet</p>
         ) : (
           <div style={{ 
             display: 'grid', 
@@ -314,18 +330,25 @@ export default function EventDetailsPage() {
                 style={{ textDecoration: 'none' }}
               >
                 <div style={{
-                  padding: '1rem',
-                  background: '#f5f5f5',
-                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(20px)',
+                  borderRadius: '16px',
                   textAlign: 'center',
-                  transition: 'transform 0.2s',
-                  cursor: 'pointer'
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                 }}
                 >
                   {participant.photoURL ? (
@@ -337,7 +360,9 @@ export default function EventDetailsPage() {
                         height: '80px',
                         borderRadius: '50%',
                         objectFit: 'cover',
-                        marginBottom: '0.5rem'
+                        marginBottom: '0.75rem',
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                       }}
                     />
                   ) : (
@@ -345,17 +370,27 @@ export default function EventDetailsPage() {
                       width: '80px',
                       height: '80px',
                       borderRadius: '50%',
-                      background: '#ccc',
-                      margin: '0 auto 0.5rem'
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
+                      margin: '0 auto 0.75rem',
+                      border: '2px solid rgba(255, 255, 255, 0.3)'
                     }} />
                   )}
-                  <div style={{ fontWeight: '600' }}>{participant.displayName}</div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>{participant.faculty}</div>
+                  <div style={{ 
+                    fontWeight: '600',
+                    color: '#ffffff',
+                    marginBottom: '0.25rem',
+                    fontSize: '1rem'
+                  }}>{participant.displayName}</div>
+                  <div style={{ 
+                    fontSize: '0.85rem', 
+                    color: 'rgba(255, 255, 255, 0.7)'
+                  }}>{participant.faculty}</div>
                 </div>
               </Link>
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

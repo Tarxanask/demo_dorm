@@ -9,7 +9,7 @@ export interface User {
   createdAt: Date;
 }
 
-export type DormType = 'KTU' | 'LSMU' | 'Solo Society' | 'Baltija VDU' | 'Other Dorms' | 'Global';
+export type DormType = 'KTU' | 'LSMU' | 'Solo Society' | 'Baltija VDU' | 'Other Dorms' | 'General Community' | 'Global';
 
 export interface Dorm {
   id: DormType;

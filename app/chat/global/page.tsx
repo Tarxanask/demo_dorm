@@ -18,6 +18,8 @@ import { ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
 import { notifyAllUsers } from '@/utils/notifications';
+import BackButton from '@/components/BackButton';
+import AnimatedSendButton from '@/components/AnimatedSendButton';
 
 export default function GlobalChatPage() {
   const router = useRouter();
@@ -171,13 +173,21 @@ export default function GlobalChatPage() {
     return (
       <div style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         justifyContent: 'center', 
         alignItems: 'center', 
         height: '100vh',
-        color: '#ffffff',
-        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+        background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)',
+        gap: '1rem'
       }}>
-        Loading...
+        <div style={{ fontSize: '60px', animation: 'float 2s ease-in-out infinite' }}>🌍</div>
+        <div style={{ 
+          color: '#ffffff',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          fontSize: '1.1rem'
+        }}>
+          Loading global chat...
+        </div>
       </div>
     );
   }
@@ -187,53 +197,108 @@ export default function GlobalChatPage() {
       display: 'flex', 
       flexDirection: 'column', 
       height: '100vh',
-      background: '#f5f5f5'
+      background: 'linear-gradient(135deg, #303030 0%, #1a1a1a 100%)'
     }}>
+      {/* Header */}
       <div style={{ 
-        background: 'white', 
+        background: 'rgba(48, 48, 48, 0.95)', 
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         padding: '1rem', 
-        borderBottom: '1px solid #e0e0e0',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        gap: '1rem',
+        flexShrink: 0,
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link 
-            href="/home" 
-            style={{ 
-              color: '#667eea',
-              fontSize: '1.5rem',
-              textDecoration: 'none'
+        <BackButton href="/home" />
+        
+        <div style={{
+          width: '48px',
+          height: '48px',
+          borderRadius: '16px',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid rgba(255,255,255,0.2)',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          <img 
+            src="/images_dorms/GE.png" 
+            alt="Global Community" 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '16px'
             }}
-          >
-            ←
-          </Link>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Global Chat</h2>
-            <p style={{ margin: 0, fontSize: '0.875rem', color: '#666' }}>
-              Chat with everyone from all dorms
-            </p>
-          </div>
+          />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h2 style={{ 
+            margin: 0, 
+            fontSize: '1.2rem', 
+            fontWeight: '700', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis', 
+            whiteSpace: 'nowrap',
+            color: '#ffffff',
+            background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            🌍 Global Chat
+          </h2>
+          <p style={{ 
+            margin: 0, 
+            fontSize: '0.85rem', 
+            color: 'rgba(255,255,255,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span style={{ color: '#22c55e' }}>●</span>
+            Connect with the entire Kaunas community
+          </p>
         </div>
       </div>
 
+      {/* Messages Container */}
       <div 
         style={{ 
           flex: 1, 
           overflowY: 'auto', 
-          padding: '1rem',
+          overflowX: 'hidden',
+          padding: '1.5rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.75rem'
+          gap: '1rem',
+          WebkitOverflowScrolling: 'touch',
+          minHeight: 0,
+          background: 'transparent'
         }}
       >
         {messages.length === 0 ? (
           <div style={{
             textAlign: 'center',
-            padding: '2rem',
-            color: '#666'
+            padding: '3rem 1rem',
+            color: 'rgba(255,255,255,0.6)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1rem'
           }}>
-            <p>No messages yet. Start the conversation!</p>
+            <div style={{ fontSize: '4rem', opacity: 0.5 }}>🌍</div>
+            <div>
+              <p style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0' }}>No messages yet</p>
+              <p style={{ fontSize: '0.9rem', opacity: 0.7, margin: 0 }}>Start the global conversation!</p>
+            </div>
           </div>
         ) : (
           messages.map((message) => {
@@ -248,29 +313,27 @@ export default function GlobalChatPage() {
                 style={{
                   display: 'flex',
                   gap: '0.75rem',
-                  padding: '0.75rem',
-                  borderRadius: '8px',
-                  background: isOwnMessage ? '#e6f2ff' : 'white',
-                  marginLeft: isOwnMessage ? 'auto' : '0',
-                  marginRight: isOwnMessage ? '0' : 'auto',
+                  alignSelf: isOwnMessage ? 'flex-end' : 'flex-start',
                   maxWidth: '70%',
+                  marginBottom: '0.5rem',
                   position: 'relative'
                 }}
                 onMouseEnter={() => setActiveMessageId(message.id)}
                 onMouseLeave={() => setActiveMessageId(null)}
               >
                 {!isOwnMessage && (
-                  <Link href={`/profile/${message.userId}`} style={{ textDecoration: 'none' }}>
+                  <Link href={`/profile/${message.userId}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
                     {message.userPhoto ? (
                       <img 
                         src={message.userPhoto} 
                         alt={message.userName}
                         style={{
-                          width: '40px',
-                          height: '40px',
+                          width: '36px',
+                          height: '36px',
                           borderRadius: '50%',
                           objectFit: 'cover',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          border: '2px solid #e0e0e0'
                         }}
                       />
                     ) : (
@@ -292,13 +355,28 @@ export default function GlobalChatPage() {
                   </Link>
                 )}
                 
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  background: isOwnMessage 
+                    ? 'linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%)'
+                    : 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  color: isOwnMessage ? 'white' : '#ffffff',
+                  padding: '1rem 1.25rem',
+                  borderRadius: isOwnMessage ? '20px 20px 6px 20px' : '20px 20px 20px 6px',
+                  boxShadow: isOwnMessage 
+                    ? '0 8px 25px rgba(14, 165, 233, 0.3)'
+                    : '0 8px 25px rgba(0, 0, 0, 0.2)',
+                  flex: 1,
+                  position: 'relative',
+                  border: isOwnMessage ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                  transition: 'all 0.3s ease'
+                }}>
                   {!isOwnMessage && (
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '0.5rem',
-                      marginBottom: '0.25rem'
+                      marginBottom: '0.5rem'
                     }}>
                       <Link 
                         href={`/profile/${message.userId}`}
@@ -313,15 +391,15 @@ export default function GlobalChatPage() {
                       {user?.dorm && (
                         <span style={{
                           fontSize: '0.75rem',
-                          color: '#666',
-                          background: '#f0f0f0',
+                          color: 'rgba(255,255,255,0.8)',
+                          background: 'rgba(255, 255, 255, 0.2)',
                           padding: '2px 8px',
                           borderRadius: '12px'
                         }}>
                           {user.dorm}
                         </span>
                       )}
-                      <span style={{ fontSize: '0.75rem', color: '#999' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', opacity: 0.7 }}>
                         {formatTimestamp(message.timestamp)}
                       </span>
                     </div>
@@ -330,18 +408,20 @@ export default function GlobalChatPage() {
                   {message.replyTo && (
                     <div style={{
                       padding: '0.5rem',
-                      background: 'rgba(0,0,0,0.05)',
-                      borderRadius: '4px',
+                      background: isOwnMessage ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                      borderRadius: '6px',
                       marginBottom: '0.5rem',
-                      fontSize: '0.875rem',
-                      color: '#666',
-                      borderLeft: '3px solid #667eea'
+                      fontSize: '0.85rem',
+                      borderLeft: `3px solid ${isOwnMessage ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)'}`
                     }}>
                       Replying to: {message.replyToMessage}
                     </div>
                   )}
                   
-                  <p style={{ margin: 0, wordBreak: 'break-word' }}>
+                  <div style={{ 
+                    fontStyle: message.deleted ? 'italic' : 'normal',
+                    opacity: message.deleted ? 0.7 : 1
+                  }}>
                     {editingMessageId === message.id ? (
                       <input
                         type="text"
@@ -349,7 +429,8 @@ export default function GlobalChatPage() {
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
-                            handleEditMessage(message.id, message.message);
+                            e.preventDefault();
+                            handleSendMessage(e);
                           } else if (e.key === 'Escape') {
                             setEditingMessageId(null);
                             setNewMessage('');
@@ -366,19 +447,24 @@ export default function GlobalChatPage() {
                     ) : (
                       message.message
                     )}
-                  </p>
+                  </div>
                   
-                  {message.edited && (
-                    <span style={{ fontSize: '0.75rem', color: '#999', fontStyle: 'italic' }}>
-                      (edited)
-                    </span>
-                  )}
-                  
-                  {isOwnMessage && (
-                    <span style={{ fontSize: '0.75rem', color: '#999', marginLeft: '0.5rem' }}>
-                      {formatTimestamp(message.timestamp)}
-                    </span>
-                  )}
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    marginTop: '0.25rem',
+                    fontSize: '0.75rem', 
+                    opacity: 0.7,
+                    flexWrap: 'wrap'
+                  }}>
+                    {isOwnMessage && (
+                      <span>{formatTimestamp(message.timestamp)}</span>
+                    )}
+                    {message.edited && (
+                      <span style={{ fontSize: '0.7rem' }}>(edited)</span>
+                    )}
+                  </div>
                 </div>
                 
                 {isOwnMessage && activeMessageId === message.id && (
@@ -426,24 +512,68 @@ export default function GlobalChatPage() {
       <form 
         onSubmit={handleSendMessage}
         style={{
-          background: 'white',
-          padding: '1rem',
-          borderTop: '1px solid #e0e0e0',
+          background: 'rgba(48, 48, 48, 0.95)',
+          backdropFilter: 'blur(20px)',
+          padding: '1.25rem',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
           display: 'flex',
-          gap: '0.75rem'
+          gap: '1rem',
+          alignItems: 'center',
+          flexShrink: 0,
+          boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.3)',
+          position: 'relative'
         }}
       >
+        {editingMessageId && (
+          <div style={{
+            position: 'absolute',
+            top: '-40px',
+            left: 0,
+            right: 0,
+            background: 'rgba(251, 191, 36, 0.2)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.5rem 1rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            color: '#fbbf24',
+            borderTop: '1px solid rgba(251, 191, 36, 0.3)'
+          }}>
+            <span>✏️ Editing message</span>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingMessageId(null);
+                setNewMessage('');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#fbbf24',
+                cursor: 'pointer',
+                fontSize: '1.5rem'
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
         {replyTo && (
           <div style={{
-            padding: '0.5rem',
-            background: '#e6f2ff',
-            borderRadius: '4px',
-            fontSize: '0.875rem',
+            position: 'absolute',
+            top: '-40px',
+            left: 0,
+            right: 0,
+            background: 'rgba(14, 165, 233, 0.2)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.5rem 1rem',
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '0.5rem'
+            color: '#0ea5e9',
+            borderTop: '1px solid rgba(14, 165, 233, 0.3)'
           }}>
-            <span>Replying to: {replyToMessage}</span>
+            <span>💬 Replying to: {replyToMessage}</span>
             <button
               type="button"
               onClick={() => {
@@ -453,8 +583,9 @@ export default function GlobalChatPage() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#667eea',
-                cursor: 'pointer'
+                color: '#0ea5e9',
+                cursor: 'pointer',
+                fontSize: '1.5rem'
               }}
             >
               ×
@@ -468,19 +599,39 @@ export default function GlobalChatPage() {
           placeholder={editingMessageId ? "Edit message..." : "Type a message..."}
           style={{
             flex: 1,
-            padding: '0.75rem',
-            border: '2px solid #e0e0e0',
-            borderRadius: '8px',
-            fontSize: '1rem'
+            padding: '1rem 1.25rem',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            borderRadius: '25px',
+            fontSize: '16px',
+            minHeight: '50px',
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            outline: 'none',
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            color: '#ffffff',
+            transition: 'all 0.3s ease'
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = '#0ea5e9';
+            e.target.style.boxShadow = '0 0 0 3px rgba(14, 165, 233, 0.1)';
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            e.target.style.boxShadow = 'none';
           }}
         />
-        <button
-          type="submit"
-          className="btn btn-primary"
+        <AnimatedSendButton 
+          onClick={(e) => {
+            e?.preventDefault();
+            const form = e?.currentTarget?.closest('form');
+            if (form) {
+              const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+              form.dispatchEvent(submitEvent);
+            }
+          }} 
           disabled={!newMessage.trim()}
-        >
-          {editingMessageId ? 'Save' : 'Send'}
-        </button>
+        />
         {editingMessageId && (
           <button
             type="button"
@@ -488,7 +639,17 @@ export default function GlobalChatPage() {
               setEditingMessageId(null);
               setNewMessage('');
             }}
-            className="btn btn-secondary"
+            style={{
+              padding: '0.75rem 1.25rem',
+              fontSize: '1rem',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '25px',
+              color: '#ffffff',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              minHeight: '50px'
+            }}
           >
             Cancel
           </button>

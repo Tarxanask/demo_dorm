@@ -7,6 +7,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { DormType, User } from '@/firebase/types';
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 const DORM_INFO: Record<DormType, { location: string; facilities: string[]; description?: string; image?: string }> = {
   'KTU': {
@@ -38,6 +39,18 @@ const DORM_INFO: Record<DormType, { location: string; facilities: string[]; desc
     facilities: ['WiFi', 'Common Areas', 'Study Rooms', 'Convenient Location', 'Public Transport Access'],
     description: 'The "Other Dorms" category includes places like Kauno kolegija\'s Student Residence Hall 1 on Taikos prospektas 121 and Residence Hall 2 on V. Krėvės prospektas 92, as well as several smaller student housing options across Kaunas. These dorms feature cozy common areas and study rooms where students from different institutions can interact and relax. They are conveniently located near public transport and city hotspots, making them ideal for organizing casual gatherings or events. Because they are not tied to a single university, they create a diverse and social environment for students throughout Kaunas.',
     image: '/images_dorms/Baltija VDU.png'
+  },
+  'General Community': {
+    location: 'Kaunas City and Surrounding Areas',
+    facilities: ['Public Spaces', 'Cafes', 'Parks', 'Community Centers', 'Co-working Spaces', 'Event Venues'],
+    description: 'General Community welcomes everyone who wants to connect and socialize in Kaunas. Whether you\'re a student, young professional, or simply looking to make new friends, this community is for you. Join us for cafe meetups, park gatherings, professional networking events, hobby groups, and social activities throughout the city. Discover new places, meet interesting people, and be part of an inclusive community that celebrates diversity and friendship.',
+    image: '/images_dorms/GE.png'
+  },
+  'Global': {
+    location: 'Global Community',
+    facilities: ['Online Chat', 'Community Events', 'Global Network', 'Open to All'],
+    description: 'The Global community is a space for all students and individuals to connect, share experiences, and collaborate regardless of their dorm or location. This is an open community that welcomes everyone.',
+    image: '/images_dorms/GE.png'
   }
 };
 
@@ -78,21 +91,7 @@ export default function DormPage() {
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href="/home" 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
-        }}
-      >
-        <i className="bi bi-arrow-left-circle-fill"></i>
-      </Link>
+      <BackButton href="/home" />
 
       <div className="card" style={{ marginBottom: '1.5rem' }}>
         {dormInfo.image && (
@@ -178,18 +177,25 @@ export default function DormPage() {
               style={{ textDecoration: 'none' }}
             >
               <div style={{
-                padding: '1rem',
-                background: '#f5f5f5',
-                borderRadius: '8px',
+                padding: '1.5rem',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '16px',
                 textAlign: 'center',
-                transition: 'transform 0.2s',
-                cursor: 'pointer'
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
               }}
               >
                 {member.photoURL ? (
@@ -201,7 +207,9 @@ export default function DormPage() {
                       height: '80px',
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      marginBottom: '0.5rem'
+                      marginBottom: '0.75rem',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
                     }}
                   />
                 ) : (
@@ -209,12 +217,21 @@ export default function DormPage() {
                     width: '80px',
                     height: '80px',
                     borderRadius: '50%',
-                    background: '#ccc',
-                    margin: '0 auto 0.5rem'
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)',
+                    margin: '0 auto 0.75rem',
+                    border: '2px solid rgba(255, 255, 255, 0.3)'
                   }} />
                 )}
-                <div style={{ fontWeight: '600' }}>{member.displayName}</div>
-                <div style={{ fontSize: '0.9rem', color: '#666' }}>{member.faculty}</div>
+                <div style={{ 
+                  fontWeight: '600',
+                  color: '#ffffff',
+                  marginBottom: '0.25rem',
+                  fontSize: '1rem'
+                }}>{member.displayName}</div>
+                <div style={{ 
+                  fontSize: '0.85rem', 
+                  color: 'rgba(255, 255, 255, 0.7)'
+                }}>{member.faculty}</div>
               </div>
             </Link>
           ))}

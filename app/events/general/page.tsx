@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   collection, 
@@ -16,18 +16,16 @@ import {
   arrayRemove
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { DormType, Event } from '@/firebase/types';
+import { Event } from '@/firebase/types';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import BackButton from '@/components/BackButton';
 
-export default function EventsPage() {
-  const params = useParams();
+export default function GeneralEventsPage() {
   const router = useRouter();
   const { currentUser, userData } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
-  // Decode the dormId from URL (handles URL encoding like %20 for spaces)
-  const dormId = decodeURIComponent(params.dormId as string) as DormType;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!currentUser) {
@@ -35,10 +33,10 @@ export default function EventsPage() {
       return;
     }
 
-    // Query events for this dorm
+    // Query events for General Community
     const q = query(
       collection(db, 'events'),
-      where('dormId', '==', dormId)
+      where('dormId', '==', 'General Community')
     );
 
     const unsubscribe = onSnapshot(
@@ -53,9 +51,9 @@ export default function EventsPage() {
           } as Event;
         });
         
-        // Filter out past events (events where the date has passed)
+        // Filter out past events
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+        today.setHours(0, 0, 0, 0);
         
         const activeEvents = eventsList.filter(event => {
           const eventDate = new Date(event.date);
@@ -63,26 +61,27 @@ export default function EventsPage() {
           return eventDate >= today;
         });
         
-        // Sort by date client-side (since composite index might not exist)
+        // Sort by date
         activeEvents.sort((a, b) => {
           const dateA = new Date(a.date).getTime();
           const dateB = new Date(b.date).getTime();
           if (dateA !== dateB) {
             return dateA - dateB;
           }
-          // If same date, sort by time
           return a.time.localeCompare(b.time);
         });
         
         setEvents(activeEvents);
+        setLoading(false);
       },
       (error) => {
-        console.error('Error fetching events:', error);
+        console.error('Error fetching general events:', error);
+        setLoading(false);
       }
     );
 
     return () => unsubscribe();
-  }, [dormId, currentUser, router]);
+  }, [currentUser, router]);
 
   async function handleJoinEvent(eventId: string) {
     if (!currentUser || !userData) return;
@@ -100,30 +99,10 @@ export default function EventsPage() {
             participants: arrayRemove(currentUser.uid)
           });
         } else {
-          // Check if event is residents-only and user is not a resident
-          if (event.residentsOnly && userData.dorm !== event.dormId) {
-            alert(`This event is only for ${event.dormId} residents. You are a ${userData.dorm} resident and cannot join this event.`);
-            return;
-          }
-          
           // Check if event is full
           if (event.participants.length >= event.maxParticipants) {
             alert('Event is full');
             return;
-          }
-          
-          // Show cross-dorm visitor notice if user is from different dorm
-          if (!event.residentsOnly && userData.dorm !== event.dormId) {
-            const confirmMessage = `You are a ${userData.dorm} resident joining an event in ${event.dormId}.\n\n` +
-              `As a visitor, you must:\n` +
-              `• Be accompanied by a ${event.dormId} resident (the host)\n` +
-              `• Obey ${event.dormId}'s rules (quiet hours, no alcohol in common areas if forbidden)\n` +
-              `• Present ID at reception if requested\n\n` +
-              `Do you understand and agree to follow these rules?`;
-            
-            if (!confirm(confirmMessage)) {
-              return;
-            }
           }
           
           // Join event
@@ -163,14 +142,20 @@ export default function EventsPage() {
     return currentUser && event.participants.includes(currentUser.uid);
   };
 
-  const canJoinEvent = (event: Event) => {
-    if (!currentUser || !userData) return false;
-    // If event is residents-only, user must be from the same dorm
-    if (event.residentsOnly && userData.dorm !== event.dormId) {
-      return false;
-    }
-    return true;
-  };
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        color: '#ffffff',
+        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
@@ -181,21 +166,36 @@ export default function EventsPage() {
         marginBottom: '1.5rem'
       }}>
         <BackButton href="/home" />
+        
         <Link 
-          href={`/events/create?dorm=${dormId}`}
+          href="/events/create?dorm=General%20Community&type=general"
           className="btn btn-primary"
         >
           Create Event
         </Link>
       </div>
 
-      <h1 style={{ marginBottom: '1.5rem' }}>{dormId} Events</h1>
+      <h1 style={{ marginBottom: '0.5rem' }}> General Community Events</h1>
+      <p style={{ marginBottom: '1.5rem', color: '#666' }}>
+        Open events for everyone in Kaunas - students, professionals, and anyone looking to connect!
+      </p>
 
       {events.length === 0 ? (
         <div className="card">
-          <p style={{ textAlign: 'center', color: '#666' }}>
-            No events yet. Be the first to create one!
-          </p>
+          <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
+            <h3 style={{ marginBottom: '1rem', color: '#333' }}>No events yet</h3>
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+              Be the first to create a general event for the Kaunas community!
+            </p>
+            <Link 
+              href="/events/create?dorm=General%20Community&type=general"
+              className="btn btn-primary"
+              style={{ textDecoration: 'none' }}
+            >
+              Create First Event
+            </Link>
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -214,6 +214,7 @@ export default function EventsPage() {
                   }}
                 />
               )}
+              
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
@@ -221,40 +222,29 @@ export default function EventsPage() {
                 marginBottom: '1rem'
               }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                    <h2 style={{ marginBottom: '0.5rem' }}>{event.title}</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <h2 style={{ margin: 0 }}>{event.title}</h2>
+                    <span style={{
+                      background: '#06b6d4',
+                      color: 'white',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600'
+                    }}>
+                      GENERAL
+                    </span>
                   </div>
+                  
                   <div style={{ color: '#666', marginBottom: '0.5rem' }}>
                     <div><strong>Host:</strong> {event.hostName}</div>
-                    {!event.isHostResident && dormId !== 'General Community' && (
-                      <div style={{ 
-                        background: '#fff3cd',
-                        border: '1px solid #ffc107',
-                        borderRadius: '8px',
-                        padding: '0.75rem',
-                        marginTop: '0.5rem',
-                        marginBottom: '0.5rem',
-                        fontSize: '0.9rem',
-                        color: '#856404'
-                      }}>
-                        <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
-                          ⚠ Cross-Dorm Event
-                        </div>
-                        <div style={{ fontSize: '0.85rem' }}>
-                          Host is from <strong>{event.hostName}</strong> (not a {dormId} resident). 
-                          Visitors must be accompanied by a {dormId} resident and follow dorm rules.
-                        </div>
-                      </div>
-                    )}
                     <div><strong>Date:</strong> {format(new Date(event.date), 'MMM dd, yyyy')}</div>
                     <div><strong>Time:</strong> {event.time}</div>
                     <div>
                       <strong>Participants:</strong> {event.participants.length} / {event.maxParticipants}
                     </div>
-                    {event.residentsOnly && event.dormId !== 'General Community' && (
-                      <div style={{ color: '#0070f3' }}>Residents only</div>
-                    )}
                   </div>
+                  
                   <p style={{ marginTop: '0.5rem' }}>{event.description}</p>
                 </div>
               </div>
@@ -265,29 +255,20 @@ export default function EventsPage() {
                 marginTop: '1rem',
                 flexWrap: 'wrap'
               }}>
-                {!canJoinEvent(event) && event.residentsOnly && event.dormId !== 'General Community' ? (
-                  <button
-                    disabled
-                    className="btn btn-secondary"
-                    style={{ opacity: 0.6, cursor: 'not-allowed' }}
-                    title={`This event is only for ${event.dormId} residents`}
-                  >
-                    Join Event (Residents Only)
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleJoinEvent(event.id)}
-                    className={isParticipating(event) ? 'btn btn-secondary' : 'btn btn-primary'}
-                  >
-                    {isParticipating(event) ? 'Leave Event' : 'Join Event'}
-                  </button>
-                )}
+                <button
+                  onClick={() => handleJoinEvent(event.id)}
+                  className={isParticipating(event) ? 'btn btn-secondary' : 'btn btn-primary'}
+                >
+                  {isParticipating(event) ? 'Leave Event' : 'Join Event'}
+                </button>
+                
                 <Link 
                   href={`/event/${event.id}`}
                   className="btn btn-secondary"
                 >
                   View Details
                 </Link>
+                
                 {currentUser && event.hostId === currentUser.uid && (
                   <button
                     onClick={() => handleDeleteEvent(event.id, event.title)}
@@ -305,5 +286,3 @@ export default function EventsPage() {
     </div>
   );
 }
-
-

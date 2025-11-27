@@ -13,7 +13,8 @@ const DORMS: { id: DormType; name: string }[] = [
   { id: 'LSMU', name: 'LSMU' },
   { id: 'Solo Society', name: 'Solo Society' },
   { id: 'Baltija VDU', name: 'Baltija VDU' },
-  { id: 'Other Dorms', name: 'Other Dorms' }
+  { id: 'Other Dorms', name: 'Other Dorms' },
+  { id: 'General Community', name: 'General Community' }
 ];
 
 const COMMON_HOBBIES = [

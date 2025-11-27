@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/firebase/config';
 import Link from 'next/link';
+import BackButton from '@/components/BackButton';
 
 const COMMON_HOBBIES = [
   'Sports', 'Music', 'Reading', 'Gaming', 'Cooking', 'Traveling',
@@ -137,17 +138,7 @@ function EditProfileContent() {
 
   return (
     <div className="container" style={{ maxWidth: '600px', paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <Link 
-        href="/profile" 
-        style={{ 
-          color: '#0070f3',
-          fontSize: '1.5rem',
-          textDecoration: 'none',
-          display: 'inline-flex',
-          alignItems: 'center',
-          marginBottom: '1rem',
-          flexShrink: 0,
-          minWidth: '32px'
+      <BackButton href="/profile" />
         }}
       >
         <i className="bi bi-arrow-left-circle-fill"></i>

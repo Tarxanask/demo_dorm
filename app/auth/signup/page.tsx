@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import Link from 'next/link';
+import SpiderManLoader from '@/components/SpiderManLoader';
 
 function SignupContent() {
   const [email, setEmail] = useState('');
@@ -111,13 +112,17 @@ function SignupContent() {
     }
   }
 
+  if (loading) {
+    return <SpiderManLoader size="medium" />;
+  }
+
   return (
     <div className="container" style={{ maxWidth: '400px', marginTop: '2rem', paddingTop: '2rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <div style={{
           width: '60px',
           height: '60px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: '#667eea',
           borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',

@@ -3,6 +3,8 @@ import './globals.css';
 import { Providers } from './providers';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import NotificationHandler from '@/components/NotificationHandler';
+import AuthButton from '@/components/AuthButton';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Dormzy',
@@ -28,6 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link 
+          rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossOrigin="anonymous"
+        />
         <link rel="icon" href="/images/logo.png" />
         <link rel="apple-touch-icon" href="/images/logo.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -55,6 +63,30 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
+          {/* Mobile-responsive header */}
+          <header style={{
+            position: 'sticky',
+            top: 0,
+            background: '#303030',
+            borderBottom: '1px solid #555555',
+            padding: '0.75rem 1rem',
+            zIndex: 1000,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <Link href="/home" style={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#667eea',
+              textDecoration: 'none'
+            }}>
+              Dormzy
+            </Link>
+            
+            <AuthButton />
+          </header>
+          
           {children}
           <PWAInstallPrompt />
           <NotificationHandler />
