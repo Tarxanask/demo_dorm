@@ -5,10 +5,9 @@ import React from 'react';
 interface AnimatedSendButtonProps {
   onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
-  text?: string;
 }
 
-export default function AnimatedSendButton({ onClick, disabled = false, text = 'Send' }: AnimatedSendButtonProps) {
+export default function AnimatedSendButton({ onClick, disabled = false }: AnimatedSendButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/firebase/config';
-import Link from 'next/link';
 import BackButton from '@/components/BackButton';
 
 const COMMON_HOBBIES = [

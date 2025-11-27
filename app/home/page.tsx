@@ -20,7 +20,7 @@ const DORMS: { id: DormType; name: string; color: string }[] = [
 ];
 
 function HomeContent() {
-  const { currentUser, userData, logout, loading } = useAuth();
+  const { currentUser, userData, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [selectedDorm, setSelectedDorm] = useState<DormType | null>(null);
