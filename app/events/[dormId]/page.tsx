@@ -189,7 +189,7 @@ export default function EventsPage() {
         </Link>
       </div>
 
-      <h1 style={{ marginBottom: '1.5rem' }}>{dormId} Events</h1>
+      <h1 style={{ marginBottom: '1.5rem' }}>#{dormId} Events</h1>
 
       {events.length === 0 ? (
         <div className="card">

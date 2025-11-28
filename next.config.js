@@ -3,6 +3,8 @@ const withPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  // Exclude Firebase Messaging service worker from PWA build
+  publicExcludes: ['!firebase-messaging-sw.js'],
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,

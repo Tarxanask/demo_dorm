@@ -359,7 +359,7 @@ function ChatPageContent() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            {dormId}
+            #{dormId}
           </h2>
           <p style={{ 
             margin: 0, 

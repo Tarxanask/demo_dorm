@@ -28,8 +28,17 @@ export async function initializeFirebaseMessaging() {
       return null;
     }
 
-    // Wait for service worker to be ready
-    await navigator.serviceWorker.ready;
+    // Register the Firebase Messaging service worker
+    try {
+      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('Firebase Messaging SW registered:', registration);
+      
+      // Wait for service worker to be ready
+      await navigator.serviceWorker.ready;
+    } catch (error) {
+      console.error('Failed to register Firebase Messaging SW:', error);
+      return null;
+    }
 
     messaging = getMessaging();
     console.log('Firebase Messaging initialized');
