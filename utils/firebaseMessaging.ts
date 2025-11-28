@@ -1,54 +1,6 @@
-import { initializeApp, getApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage, Messaging, isSupported } from 'firebase/messaging';
+// Simple browser notifications without Firebase Cloud Messaging
 import { db } from '@/firebase/config';
-import { doc, setDoc } from 'firebase/firestore';
-
-let messaging: Messaging | null = null;
-
-export async function initializeFirebaseMessaging() {
-  try {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    // Check if messaging is supported
-    const messagingSupported = await isSupported();
-    if (!messagingSupported) {
-      console.log('Firebase Messaging not supported in this browser');
-      return null;
-    }
-
-    if (messaging) {
-      return messaging;
-    }
-
-    // Initialize messaging only if supported
-    if (!('serviceWorker' in navigator)) {
-      console.log('Service Workers not supported');
-      return null;
-    }
-
-    // Register the Firebase Messaging service worker
-    try {
-      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      console.log('Firebase Messaging SW registered:', registration);
-      
-      // Wait for service worker to be ready
-      await navigator.serviceWorker.ready;
-    } catch (error) {
-      console.error('Failed to register Firebase Messaging SW:', error);
-      return null;
-    }
-
-    messaging = getMessaging();
-    console.log('Firebase Messaging initialized');
-
-    return messaging;
-  } catch (error) {
-    console.error('Error initializing Firebase Messaging:', error);
-    return null;
-  }
-}
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 export async function requestNotificationPermission(): Promise<boolean> {
   try {
@@ -62,7 +14,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
     }
 
     if (Notification.permission === 'granted') {
-      await subscribeToNotifications();
+      console.log('Notification permission already granted');
       return true;
     }
 
@@ -72,105 +24,53 @@ export async function requestNotificationPermission(): Promise<boolean> {
     }
 
     const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      await subscribeToNotifications();
-      return true;
-    }
-
-    return false;
+    console.log('Notification permission:', permission);
+    return permission === 'granted';
   } catch (error) {
     console.error('Error requesting notification permission:', error);
     return false;
   }
 }
 
-export async function subscribeToNotifications(userId?: string): Promise<void> {
+export async function showNotification(title: string, options?: NotificationOptions): Promise<void> {
   try {
-    if (typeof window === 'undefined') {
+    if (typeof window === 'undefined') return;
+
+    if (Notification.permission !== 'granted') {
+      console.log('Notification permission not granted');
       return;
     }
 
-    if (!messaging) {
-      messaging = await initializeFirebaseMessaging();
-      if (!messaging) {
-        console.log('Messaging not available');
-        return;
-      }
-    }
-
-    const vapidKey = process.env.NEXT_PUBLIC_FCM_VAPID_KEY;
-    if (!vapidKey) {
-      console.warn('FCM VAPID key not configured');
-      return;
-    }
-
-    const token = await getToken(messaging, { vapidKey });
-
-    if (token) {
-      console.log('FCM Token obtained:', token.substring(0, 20) + '...');
-
-      // Save token to Firestore
-      if (userId) {
-        await setDoc(
-          doc(db, 'userTokens', userId),
-          {
-            fcmToken: token,
-            updatedAt: new Date(),
-            platform: 'web'
-          },
-          { merge: true }
-        );
-        console.log('FCM token saved to Firestore for user:', userId);
-      } else {
-        // Store in localStorage if no userId
-        localStorage.setItem('fcmToken', token);
-      }
+    // Use service worker notification if available
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification(title, {
+        icon: '/images/logo.png',
+        badge: '/images/logo.png',
+        ...options
+      });
+    } else {
+      // Fallback to regular notification
+      new Notification(title, {
+        icon: '/images/logo.png',
+        badge: '/images/logo.png',
+        ...options
+      });
     }
   } catch (error) {
-    console.error('Error getting FCM token:', error);
+    console.error('Error showing notification:', error);
   }
 }
 
-export async function setupMessageListener(): Promise<void> {
-  try {
-    if (typeof window === 'undefined') {
-      return;
-    }
+// No longer needed - removing FCM complexity
+export async function initializeFirebaseMessaging() {
+  return null;
+}
 
-    if (!messaging) {
-      messaging = await initializeFirebaseMessaging();
-      if (!messaging) {
-        return;
-      }
-    }
+export async function subscribeToNotifications() {
+  return;
+}
 
-    // Listen to messages when the app is in the foreground
-    onMessage(messaging, (payload) => {
-      console.log('Message received in foreground:', payload);
-
-      if (payload.notification) {
-        const title = payload.notification.title || 'Dormzy';
-        const options: NotificationOptions = {
-          body: payload.notification.body,
-          icon: payload.notification.icon || '/images/logo.png',
-          badge: '/images/logo.png',
-          data: payload.data,
-          tag: 'dormzy-notification'
-        };
-
-        // Show notification
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.ready.then((registration) => {
-            registration.showNotification(title, options);
-          });
-        } else if ('Notification' in window) {
-          new Notification(title, options);
-        }
-      }
-    });
-
-    console.log('Message listener set up');
-  } catch (error) {
-    console.error('Error setting up message listener:', error);
-  }
+export async function setupMessageListener() {
+  return;
 }

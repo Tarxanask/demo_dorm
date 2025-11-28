@@ -353,11 +353,7 @@ function ChatPageContent() {
             overflow: 'hidden', 
             textOverflow: 'ellipsis', 
             whiteSpace: 'nowrap',
-            color: '#ffffff',
-            background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            color: '#0ea5e9'
           }}>
             #{dormId}
           </h2>

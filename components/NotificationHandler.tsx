@@ -1,48 +1,29 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { initializeFirebaseMessaging, setupMessageListener } from '@/utils/firebaseMessaging';
+import { requestNotificationPermission } from '@/utils/notifications';
 
 export default function NotificationHandler() {
-  const router = useRouter();
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Initialize Firebase Messaging
-    const initializeMessaging = async () => {
+    // Request notification permission on mount
+    const initializeNotifications = async () => {
       try {
-        await initializeFirebaseMessaging();
-        await setupMessageListener();
-        console.log('Firebase Messaging initialized');
+        const granted = await requestNotificationPermission();
+        if (granted) {
+          console.log('Notification permission granted');
+        } else {
+          console.log('Notification permission not granted');
+        }
       } catch (error) {
-        console.error('Error initializing Firebase Messaging:', error);
+        console.error('Error initializing notifications:', error);
       }
     };
 
-    initializeMessaging();
+    // Delay the request slightly so it doesn't interfere with page load
+    setTimeout(initializeNotifications, 2000);
   }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    // Handle notification clicks via service worker messages
-    if ('serviceWorker' in navigator) {
-      const handleMessage = (event: MessageEvent) => {
-        if (event.data && event.data.type === 'NOTIFICATION_CLICK') {
-          const url = event.data.url || '/home';
-          router.push(url);
-        }
-      };
-
-      navigator.serviceWorker.addEventListener('message', handleMessage);
-
-      return () => {
-        navigator.serviceWorker.removeEventListener('message', handleMessage);
-      };
-    }
-  }, [router]);
 
   return null;
 }

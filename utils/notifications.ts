@@ -1,246 +1,37 @@
-import { collection, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
-import { db } from '@/firebase/config';
-import { DormType } from '@/firebase/types';
-import { subscribeToNotifications } from './firebaseMessaging';
+﻿import { showNotification, requestNotificationPermission as requestPermission } from './firebaseMessaging';
 
-// Request notification permission and subscribe
+// Request notification permission
 export async function requestNotificationPermission(): Promise<boolean> {
-  if (!('Notification' in window)) {
-    console.log('This browser does not support notifications');
-    return false;
-  }
-
-  if (Notification.permission === 'granted') {
-    return true;
-  }
-
-  if (Notification.permission === 'denied') {
-    console.log('Notification permission denied');
-    return false;
-  }
-
-  const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-    // Subscribe to FCM notifications
-    await subscribeToNotifications();
-  }
-  return permission === 'granted';
+  return await requestPermission();
 }
 
-// Get service worker registration
-async function getServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
-  if (!('serviceWorker' in navigator)) {
-    return null;
-  }
-
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    return registration;
-  } catch (error) {
-    console.error('Error getting service worker:', error);
-    return null;
-  }
+// Show a simple browser notification
+export async function showLocalNotification(title: string, body: string, data?: any): Promise<void> {
+  await showNotification(title, {
+    body,
+    data,
+    tag: 'dormzy',
+    requireInteraction: false
+  });
 }
 
-// Subscribe to push notifications
-export async function subscribeToPushNotifications(userId: string): Promise<void> {
-  try {
-    const permission = await requestNotificationPermission();
-    if (!permission) {
-      return;
-    }
-
-    const registration = await getServiceWorkerRegistration();
-    if (!registration) {
-      return;
-    }
-
-    // For now, we'll use the browser Notification API directly
-    // In production, you'd want to set up VAPID keys and use push subscriptions
-    // Save a simple flag to Firestore that user has enabled notifications
-    await setDoc(doc(db, 'notificationSubscriptions', userId), {
-      enabled: true,
-      userId,
-      timestamp: new Date()
-    }, { merge: true });
-  } catch (error) {
-    console.error('Error subscribing to push notifications:', error);
-  }
-}
-
-// Convert VAPID key
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-// Save subscription to Firestore
-async function saveSubscriptionToFirestore(
-  userId: string,
-  subscription: PushSubscription
-): Promise<void> {
-  try {
-    const p256dhKey = subscription.getKey('p256dh');
-    const authKey = subscription.getKey('auth');
-    
-    if (!p256dhKey || !authKey) {
-      console.error('Missing subscription keys');
-      return;
-    }
-    
-    const subData = {
-      endpoint: subscription.endpoint,
-      keys: {
-        p256dh: arrayBufferToBase64(p256dhKey),
-        auth: arrayBufferToBase64(authKey)
-      }
-    };
-
-    await setDoc(doc(db, 'notificationSubscriptions', userId), subData, { merge: true });
-  } catch (error) {
-    console.error('Error saving subscription:', error);
-  }
-}
-
-// Convert ArrayBuffer to base64
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
-}
-
-// Send notification to all users in a dorm
+// Notify dorm users (shows notification only to current user - simplified)
 export async function notifyDormUsers(
-  dormId: DormType,
+  dormId: string,
   title: string,
   body: string,
   data?: Record<string, unknown>
 ): Promise<void> {
-  try {
-    // Query all FCM tokens for users in this dorm
-    const tokensQuery = query(
-      collection(db, 'userTokens'),
-      where('dorm', '==', dormId)
-    );
-
-    const tokensSnapshot = await getDocs(tokensQuery);
-    const tokens: string[] = [];
-
-    tokensSnapshot.forEach((docSnapshot) => {
-      if (docSnapshot.data().fcmToken) {
-        tokens.push(docSnapshot.data().fcmToken);
-      }
-    });
-
-    if (tokens.length > 0) {
-      // Send to FCM backend
-      try {
-        await fetch('/api/send-notifications', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tokens,
-            notification: {
-              title,
-              body,
-              icon: '/images/logo.png'
-            },
-            data: data || {},
-            dormId
-          })
-        });
-      } catch (fetchError) {
-        console.error('Error calling notification API:', fetchError);
-      }
-    }
-
-    // Also show local notification if permission granted
-    if (Notification.permission === 'granted') {
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification(title, {
-          body,
-          icon: '/images/logo.png',
-          badge: '/images/logo.png',
-          data: data || {},
-          tag: `dorm-${dormId}`,
-          requireInteraction: false
-        });
-      }
-    }
-  } catch (error) {
-    console.error('Error notifying dorm users:', error);
-  }
+  // Simply show notification to current user
+  await showLocalNotification(title, body, data);
 }
 
-// Send notification to all users (global)
+// Notify all users (shows notification only to current user - simplified)
 export async function notifyAllUsers(
   title: string,
   body: string,
   data?: Record<string, unknown>
 ): Promise<void> {
-  try {
-    // Query all FCM tokens
-    const tokensQuery = query(collection(db, 'userTokens'));
-    const tokensSnapshot = await getDocs(tokensQuery);
-    const tokens: string[] = [];
-
-    tokensSnapshot.forEach((docSnapshot) => {
-      if (docSnapshot.data().fcmToken) {
-        tokens.push(docSnapshot.data().fcmToken);
-      }
-    });
-
-    if (tokens.length > 0) {
-      // Send to FCM backend
-      try {
-        await fetch('/api/send-notifications', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tokens,
-            notification: {
-              title,
-              body,
-              icon: '/images/logo.png'
-            },
-            data: data || {}
-          })
-        });
-      } catch (fetchError) {
-        console.error('Error calling notification API:', fetchError);
-      }
-    }
-
-    // Also show local notification
-    if (Notification.permission === 'granted') {
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification(title, {
-          body,
-          icon: '/images/logo.png',
-          badge: '/images/logo.png',
-          data: data || {},
-          tag: 'global',
-          requireInteraction: false
-        });
-      }
-    }
-  } catch (error) {
-    console.error('Error notifying all users:', error);
-  }
+  // Simply show notification to current user
+  await showLocalNotification(title, body, data);
 }
-
