@@ -82,24 +82,19 @@ export async function notifyDormUsers(
   excludeUserId?: string
 ) {
   try {
-    // Get all users who are members of this dorm (check both dorm and memberDorms)
+    // Get all users
     const usersSnapshot = await getDocs(collection(db, 'users'));
     
-    // Filter users based on preferences and membership
+    // Filter users based on preferences only (not membership)
     const eligibleUsers = await Promise.all(
       usersSnapshot.docs
         .filter(userDoc => {
-          const userData = userDoc.data();
           const userId = userDoc.id;
           
           // Exclude sender
           if (userId === excludeUserId) return false;
           
-          // Check if user is member of this dorm (primary dorm or in memberDorms array)
-          const isPrimaryDorm = userData.dorm === dormId;
-          const isMemberDorm = userData.memberDorms?.includes(dormId);
-          
-          return isPrimaryDorm || isMemberDorm;
+          return true; // Include all users for preference checking
         })
         .map(async (userDoc) => {
           const shouldReceive = await shouldReceiveNotification(
