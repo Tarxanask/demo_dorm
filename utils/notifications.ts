@@ -1,6 +1,7 @@
 ﻿// utils/notifications.ts - Firestore-based notification system
-import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, serverTimestamp, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, addDoc, query, where, onSnapshot, updateDoc, doc, serverTimestamp, orderBy, limit, getDocs, getDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import { NotificationPreferences } from '@/firebase/types';
 
 export interface Notification {
   id: string;
@@ -11,6 +12,38 @@ export interface Notification {
   url?: string;
   read: boolean;
   createdAt: any;
+}
+
+// Check if user should receive notification based on preferences
+async function shouldReceiveNotification(
+  userId: string,
+  dormId: string | null,
+  notificationType: 'message' | 'event' | 'info'
+): Promise<boolean> {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    const userData = userDoc.data();
+    
+    if (!userData?.notificationPreferences) {
+      return true; // Default to receiving notifications if no preferences set
+    }
+
+    const prefs: NotificationPreferences = userData.notificationPreferences;
+
+    // Check notification type preferences
+    if (notificationType === 'message' && !prefs.messageNotifications) return false;
+    if (notificationType === 'event' && !prefs.eventNotifications) return false;
+
+    // Check if dorm is enabled (if it's a dorm notification)
+    if (dormId && !prefs.enabledDorms.includes(dormId)) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error checking notification preferences:', error);
+    return true; // Default to showing notification on error
+  }
 }
 
 // Send notification to a specific user
@@ -49,18 +82,39 @@ export async function notifyDormUsers(
   excludeUserId?: string
 ) {
   try {
-    // Get all users in the dorm
-    const usersQuery = query(
-      collection(db, 'users'),
-      where('dorm', '==', dormId)
+    // Get all users who are members of this dorm (check both dorm and memberDorms)
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    
+    // Filter users based on preferences and membership
+    const eligibleUsers = await Promise.all(
+      usersSnapshot.docs
+        .filter(userDoc => {
+          const userData = userDoc.data();
+          const userId = userDoc.id;
+          
+          // Exclude sender
+          if (userId === excludeUserId) return false;
+          
+          // Check if user is member of this dorm (primary dorm or in memberDorms array)
+          const isPrimaryDorm = userData.dorm === dormId;
+          const isMemberDorm = userData.memberDorms?.includes(dormId);
+          
+          return isPrimaryDorm || isMemberDorm;
+        })
+        .map(async (userDoc) => {
+          const shouldReceive = await shouldReceiveNotification(
+            userDoc.id,
+            dormId,
+            notification.type
+          );
+          return shouldReceive ? userDoc.id : null;
+        })
     );
-    
-    const usersSnapshot = await getDocs(usersQuery);
-    
-    // Send notification to each user except the sender
-    const promises = usersSnapshot.docs
-      .filter(doc => doc.id !== excludeUserId)
-      .map(doc => sendNotification(doc.id, notification));
+
+    // Remove null values and send notifications
+    const promises = eligibleUsers
+      .filter(userId => userId !== null)
+      .map(userId => sendNotification(userId!, notification));
     
     await Promise.all(promises);
     console.log(`✅ Sent notifications to ${promises.length} users in ${dormId}`);

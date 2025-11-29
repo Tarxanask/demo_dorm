@@ -128,6 +128,21 @@ export default function AuthButton() {
               <i className="bi bi-person" style={{ marginRight: '0.5rem' }}></i>
               Profile
             </Link>
+            <Link
+              href="/settings/notifications"
+              style={{
+                display: 'block',
+                padding: '0.75rem 1rem',
+                color: '#ffffff',
+                textDecoration: 'none',
+                fontSize: '0.875rem',
+                borderBottom: '1px solid #555555'
+              }}
+              onClick={() => setShowDropdown(false)}
+            >
+              <i className="bi bi-bell" style={{ marginRight: '0.5rem' }}></i>
+              Notifications
+            </Link>
             <button
               onClick={() => {
                 setShowDropdown(false);

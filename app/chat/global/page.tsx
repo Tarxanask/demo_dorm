@@ -444,6 +444,7 @@ export default function GlobalChatPage() {
                   </div>
                 </div>
                 
+                {/* Action buttons for own messages */}
                 {isOwnMessage && activeMessageId === message.id && (
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {editingMessageId !== message.id && (
@@ -478,6 +479,26 @@ export default function GlobalChatPage() {
                       </>
                     )}
                   </div>
+                )}
+                
+                {/* Reply button for all messages */}
+                {!isOwnMessage && activeMessageId === message.id && (
+                  <button
+                    onClick={() => {
+                      setReplyTo(message.id);
+                      setReplyToMessage(message.message);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#667eea',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      padding: '0.25rem 0.5rem'
+                    }}
+                  >
+                    Reply
+                  </button>
                 )}
               </div>
             );
