@@ -7,7 +7,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
-import { notifyDormUsers } from '@/utils/pusher-notify';
+import { notifyDormUsers } from '@/utils/notifications';
 import { EVENT_IMAGES } from '../eventImages';
 import SpiderManLoader from '@/components/SpiderManLoader';
 import BackButton from '@/components/BackButton';

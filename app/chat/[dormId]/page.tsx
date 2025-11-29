@@ -18,7 +18,7 @@ import { db } from '@/firebase/config';
 import { DormType, ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
-import { notifyDormUsers } from '@/utils/pusher-notify';
+import { notifyDormUsers } from '@/utils/notifications';
 import BackButton from '@/components/BackButton';
 import AnimatedSendButton from '@/components/AnimatedSendButton';
 
