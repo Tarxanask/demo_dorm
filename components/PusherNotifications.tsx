@@ -23,24 +23,29 @@ export default function PusherNotifications() {
   useEffect(() => {
     if (!currentUser) return;
 
-    const pusher = getPusherClient();
-    const channel = pusher.subscribe(`user-${currentUser.uid}`);
+    try {
+      console.log('Setting up Pusher for user:', currentUser.uid);
+      const pusher = getPusherClient();
+      const channel = pusher.subscribe(`user-${currentUser.uid}`);
 
-    // Listen for notifications
-    channel.bind('notification', (data: Notification) => {
-      console.log('📬 Received notification:', data);
-      
-      setCurrentNotification(data);
-      setShowToast(true);
+      // Listen for notifications
+      channel.bind('notification', (data: Notification) => {
+        console.log('📬 Received notification:', data);
+        
+        setCurrentNotification(data);
+        setShowToast(true);
 
-      // Auto-hide toast after 5 seconds
-      setTimeout(() => setShowToast(false), 5000);
-    });
+        // Auto-hide toast after 5 seconds
+        setTimeout(() => setShowToast(false), 5000);
+      });
 
-    return () => {
-      channel.unbind('notification');
-      pusher.unsubscribe(`user-${currentUser.uid}`);
-    };
+      return () => {
+        channel.unbind('notification');
+        pusher.unsubscribe(`user-${currentUser.uid}`);
+      };
+    } catch (error) {
+      console.error('Error setting up Pusher notifications:', error);
+    }
   }, [currentUser]);
 
   const handleNotificationClick = (notification: Notification) => {
