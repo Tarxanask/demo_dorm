@@ -7,7 +7,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/firebase/config';
 import { DormType } from '@/firebase/types';
-import { notifyDormUsers } from '@/utils/notifications';
+import { notifyDormUsers } from '@/utils/pusher-notify';
 import { EVENT_IMAGES } from '../eventImages';
 import SpiderManLoader from '@/components/SpiderManLoader';
 import BackButton from '@/components/BackButton';
@@ -139,9 +139,13 @@ function CreateEventContent() {
       try {
         await notifyDormUsers(
           dormId,
-          'New Event Created!',
-          `${userData.displayName} created "${title}" in ${dormId}`,
-          { type: 'event', eventId: '', dormId, url: `/events/${dormId}` }
+          {
+            title: 'New Event Created!',
+            message: `${userData.displayName} created "${title}"`,
+            type: 'event',
+            url: `/events/${dormId}`
+          },
+          currentUser.uid
         );
       } catch (notifError) {
         console.error('Error sending notification:', notifError);

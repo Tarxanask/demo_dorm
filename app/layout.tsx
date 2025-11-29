@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
-import NotificationHandler from '@/components/NotificationHandler';
+import PusherNotifications from '@/components/PusherNotifications';
 import AuthButton from '@/components/AuthButton';
 import Link from 'next/link';
 
@@ -89,7 +89,7 @@ export default function RootLayout({
           
           {children}
           <PWAInstallPrompt />
-          <NotificationHandler />
+          <PusherNotifications />
         </Providers>
       </body>
     </html>

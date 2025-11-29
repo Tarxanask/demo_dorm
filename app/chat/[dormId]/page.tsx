@@ -18,7 +18,7 @@ import { db } from '@/firebase/config';
 import { DormType, ChatMessage, User } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
-import { notifyDormUsers } from '@/utils/notifications';
+import { notifyDormUsers } from '@/utils/pusher-notify';
 import BackButton from '@/components/BackButton';
 import AnimatedSendButton from '@/components/AnimatedSendButton';
 
@@ -167,9 +167,13 @@ function ChatPageContent() {
         try {
           await notifyDormUsers(
             dormId,
-            `New message in ${dormId}`,
-            `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
-            { type: 'message', dormId, url: `/chat/${encodeURIComponent(dormId)}` }
+            {
+              title: `New message in ${dormId}`,
+              message: `${userData.displayName}: ${newMessage.trim().substring(0, 50)}${newMessage.trim().length > 50 ? '...' : ''}`,
+              type: 'message',
+              url: `/chat/${encodeURIComponent(dormId)}`
+            },
+            currentUser.uid
           );
         } catch (notifError) {
           console.error('Error sending notification:', notifError);
