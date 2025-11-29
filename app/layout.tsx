@@ -1,35 +1,36 @@
-import type { Metadata } from 'next';
+'use client';
+
 import './globals.css';
 import { Providers } from './providers';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import NotificationToast from '@/components/NotificationToast';
 import AuthButton from '@/components/AuthButton';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Dormzy',
-  description: 'Connect with residents from Kaunas dormitories',
-  manifest: '/manifest.json',
-  themeColor: '#0070f3',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Dormzy',
-  },
-  icons: {
-    icon: '/images/logo.png',
-    apple: '/images/logo.png',
-  },
-};
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Track page view on route change
+    if (typeof window !== 'undefined' && pathname) {
+      import('@/lib/firebase-analytics').then(({ trackPageView }) => {
+        trackPageView(pathname);
+      });
+    }
+  }, [pathname]);
+
   return (
     <html lang="en">
       <head>
+        <title>Dormzy - Student Community Platform</title>
+        <meta name="description" content="Connect with students in KTU, LSMU, VDU dorms. Chat, organize events, and build your community." />
+        <meta name="keywords" content="dormzy, student dorms, university housing, dorm chat, student community, KTU, LSMU, VDU, Lithuania students" />
         <link 
           rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -38,7 +39,9 @@ export default function RootLayout({
         />
         <link rel="icon" href="/images/logo.png" />
         <link rel="apple-touch-icon" href="/images/logo.png" />
+        <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#0070f3" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

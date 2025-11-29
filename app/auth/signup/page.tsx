@@ -7,6 +7,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import Link from 'next/link';
 import SpiderManLoader from '@/components/SpiderManLoader';
+import { trackSignup } from '@/lib/firebase-analytics';
 
 function SignupContent() {
   const [email, setEmail] = useState('');
@@ -23,6 +24,8 @@ function SignupContent() {
 
     try {
       await loginWithGoogle();
+      // Track Google signup
+      trackSignup('google');
       // Set flag to show welcome message after profile creation
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect in AuthContext handle it
@@ -76,6 +79,9 @@ function SignupContent() {
         email: user.email,
         createdAt: new Date()
       });
+
+      // Track email signup
+      trackSignup('email');
 
       router.push('/profile/create');
     } catch (err: unknown) {
