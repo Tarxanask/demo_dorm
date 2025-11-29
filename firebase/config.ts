@@ -2,8 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAnalytics, isSupported } from 'firebase/analytics';
-import type { Analytics } from 'firebase/analytics';
 
 // Firebase configuration loaded from environment variables
 const firebaseConfig = {
@@ -35,19 +33,5 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-// Initialize Analytics (only works in browser, not server-side)
-let analytics: Analytics | null = null;
-if (typeof window !== 'undefined') {
-  isSupported().then(supported => {
-    if (supported) {
-      analytics = getAnalytics(app);
-      console.log('✅ Firebase Analytics initialized');
-    }
-  }).catch(err => {
-    console.error('Firebase Analytics error:', err);
-  });
-}
-
-export { analytics };
 export default app;
 

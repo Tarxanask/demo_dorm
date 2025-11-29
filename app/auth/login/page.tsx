@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import SpiderManLoader from '@/components/SpiderManLoader';
-import { trackLogin } from '@/lib/firebase-analytics';
 
 function LoginContent() {
   const [email, setEmail] = useState('');
@@ -59,8 +58,6 @@ function LoginContent() {
 
     try {
       await loginWithGoogle();
-      // Track Google login
-      trackLogin('google');
       // Set flag to show welcome message on home page
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect handle it after userData is loaded
@@ -90,8 +87,6 @@ function LoginContent() {
 
     try {
       await login(email, password);
-      // Track email login
-      trackLogin('email');
       // Set flag to show welcome message on home page
       sessionStorage.setItem('justLoggedIn', 'true');
       // Don't redirect here - let the useEffect handle it after userData is loaded

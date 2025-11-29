@@ -6,25 +6,13 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import NotificationToast from '@/components/NotificationToast';
 import AuthButton from '@/components/AuthButton';
 import Link from 'next/link';
-import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    // Track page view on route change
-    if (typeof window !== 'undefined' && pathname) {
-      import('@/lib/firebase-analytics').then(({ trackPageView }) => {
-        trackPageView(pathname);
-      });
-    }
-  }, [pathname]);
-
   return (
     <html lang="en">
       <head>
@@ -93,6 +81,7 @@ export default function RootLayout({
           {children}
           <PWAInstallPrompt />
           <NotificationToast />
+          <Analytics />
         </Providers>
       </body>
     </html>
