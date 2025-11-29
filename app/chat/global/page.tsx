@@ -382,23 +382,15 @@ export default function GlobalChatPage() {
                         href={`/profile/${message.userId}`}
                         style={{ 
                           fontWeight: 600, 
-                          color: '#333',
-                          textDecoration: 'none'
+                          color: 'inherit',
+                          textDecoration: 'none',
+                          marginBottom: '0.25rem',
+                          fontSize: '0.9rem',
+                          display: 'inline-block'
                         }}
                       >
                         {message.userName}
                       </Link>
-                      {user?.dorm && (
-                        <span style={{
-                          fontSize: '0.75rem',
-                          color: 'rgba(255,255,255,0.8)',
-                          background: 'rgba(255, 255, 255, 0.2)',
-                          padding: '2px 8px',
-                          borderRadius: '12px'
-                        }}>
-                          {user.dorm}
-                        </span>
-                      )}
                       <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', opacity: 0.7 }}>
                         {formatTimestamp(message.timestamp)}
                       </span>
