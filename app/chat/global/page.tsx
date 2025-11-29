@@ -10,11 +10,10 @@ import {
   onSnapshot, 
   addDoc,
   updateDoc,
-  doc,
-  getDoc
+  doc
 } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { ChatMessage, User } from '@/firebase/types';
+import { ChatMessage } from '@/firebase/types';
 import Link from 'next/link';
 import { format, isToday, isYesterday } from 'date-fns';
 import { notifyAllUsers } from '@/utils/notifications';
