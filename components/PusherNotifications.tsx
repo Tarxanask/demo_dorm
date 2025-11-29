@@ -35,12 +35,6 @@ export default function PusherNotifications() {
 
       // Auto-hide toast after 5 seconds
       setTimeout(() => setShowToast(false), 5000);
-
-      // Play notification sound
-      if (typeof Audio !== 'undefined') {
-        const audio = new Audio('/notification-sound.mp3');
-        audio.play().catch(e => console.log('Could not play sound:', e));
-      }
     });
 
     return () => {
