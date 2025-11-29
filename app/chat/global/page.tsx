@@ -29,10 +29,8 @@ export default function GlobalChatPage() {
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyToMessage, setReplyToMessage] = useState<string>('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [userCache, setUserCache] = useState<Record<string, User>>({});
   const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const userCacheRef = useRef<Record<string, User>>({});
 
   useEffect(() => {
     if (!currentUser) {
@@ -53,17 +51,6 @@ export default function GlobalChatPage() {
         
         for (const docSnap of snapshot.docs) {
           const data = docSnap.data();
-          const userId = data.userId;
-          
-          // Cache user data
-          if (!userCacheRef.current[userId]) {
-            const userDoc = await getDoc(doc(db, 'users', userId));
-            if (userDoc.exists()) {
-              const userData = userDoc.data() as User;
-              userCacheRef.current[userId] = userData;
-              setUserCache({ ...userCacheRef.current });
-            }
-          }
 
           messagesList.push({
             id: docSnap.id,
