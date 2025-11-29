@@ -9,12 +9,12 @@ import { useRouter } from 'next/navigation';
 import { Notification, markNotificationAsRead } from '@/utils/notifications';
 
 const DORM_INFO: Record<string, { name: string; icon: string }> = {
-  'KTU': { name: 'KTU Dormitories', icon: '🏛️' },
+  'KTU': { name: 'KTU Dormitories', icon: '🧑‍💻' },
   'LSMU': { name: 'LSMU Dormitories', icon: '⚕️' },
-  'Solo Society': { name: 'Solo Society', icon: '🏠' },
+  'Solo Society': { name: 'Solo Society', icon: '🏓' },
   'Baltija VDU': { name: 'Baltija VDU', icon: '🎓' },
   'Other Dorms': { name: 'Other Dorms', icon: '🏘️' },
-  'General Community': { name: 'General Community', icon: '🌍' }
+  'General Community': { name: 'General Community', icon: '🤞' }
 };
 
 const defaultPreferences: NotificationPreferences = {
@@ -23,14 +23,17 @@ const defaultPreferences: NotificationPreferences = {
   eventNotifications: true
 };
 
+// All available dorms
+const ALL_DORMS: DormType[] = ['KTU', 'LSMU', 'Solo Society', 'Baltija VDU', 'Other Dorms', 'General Community'];
+
 export default function NotificationSettingsPage() {
   const { currentUser } = useAuth();
   const router = useRouter();
   const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
-  const [memberDorms, setMemberDorms] = useState<DormType[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [userPrimaryDorm, setUserPrimaryDorm] = useState<DormType | null>(null);
 
   useEffect(() => {
     if (!currentUser) {
@@ -50,14 +53,13 @@ export default function NotificationSettingsPage() {
       const userData = userDoc.data();
 
       if (userData) {
-        // Load member dorms
-        const dorms = userData.memberDorms || [userData.dorm];
-        setMemberDorms(dorms);
+        // Store user's primary dorm
+        setUserPrimaryDorm(userData.dorm);
 
         // Load preferences or use defaults
         const prefs = userData.notificationPreferences || {
           ...defaultPreferences,
-          enabledDorms: dorms // Enable all dorms by default
+          enabledDorms: [userData.dorm] // Enable only primary dorm by default
         };
         setPreferences(prefs);
       }
@@ -122,7 +124,7 @@ export default function NotificationSettingsPage() {
   function toggleAll() {
     setPreferences(prev => ({
       ...prev,
-      enabledDorms: prev.enabledDorms.length === memberDorms.length ? [] : [...memberDorms]
+      enabledDorms: prev.enabledDorms.length === ALL_DORMS.length ? [] : [...ALL_DORMS]
     }));
   }
 
@@ -171,7 +173,7 @@ export default function NotificationSettingsPage() {
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/home')}
           style={{
             background: 'none',
             border: 'none',
@@ -179,10 +181,14 @@ export default function NotificationSettingsPage() {
             fontSize: '16px',
             cursor: 'pointer',
             padding: '8px 0',
-            marginBottom: '16px'
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}
         >
-          ← Back
+          <i className="bi bi-house-door" style={{ fontSize: '18px' }}></i>
+          <span>Home</span>
         </button>
         <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#ffffff', margin: 0 }}>
           🔔 Notification Settings
@@ -255,7 +261,7 @@ export default function NotificationSettingsPage() {
               color: '#0ea5e9'
             }}
           >
-            {preferences.enabledDorms.length === memberDorms.length ? 'Disable All' : 'Enable All'}
+            {preferences.enabledDorms.length === ALL_DORMS.length ? 'Disable All' : 'Enable All'}
           </button>
         </div>
 
@@ -263,9 +269,10 @@ export default function NotificationSettingsPage() {
           Choose which dorms you want to receive notifications from
         </p>
 
-        {memberDorms.map(dormId => {
+        {ALL_DORMS.map(dormId => {
           const dormInfo = DORM_INFO[dormId] || { name: dormId, icon: '🏠' };
           const isEnabled = preferences.enabledDorms.includes(dormId);
+          const isPrimaryDorm = dormId === userPrimaryDorm;
 
           return (
             <div
@@ -287,7 +294,21 @@ export default function NotificationSettingsPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ fontSize: '24px' }}>{dormInfo.icon}</div>
                 <div>
-                  <div style={{ fontWeight: 600, color: '#ffffff' }}>{dormInfo.name}</div>
+                  <div style={{ fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {dormInfo.name}
+                    {isPrimaryDorm && (
+                      <span style={{
+                        fontSize: '11px',
+                        background: '#0ea5e9',
+                        color: 'white',
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        fontWeight: 500
+                      }}>
+                        Your Dorm
+                      </span>
+                    )}
+                  </div>
                   <div style={{ fontSize: '14px', color: '#9ca3af' }}>
                     {isEnabled ? 'Notifications enabled' : 'Notifications disabled'}
                   </div>
