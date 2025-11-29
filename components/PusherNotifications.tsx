@@ -17,7 +17,6 @@ interface Notification {
 export default function PusherNotifications() {
   const { currentUser } = useAuth();
   const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showToast, setShowToast] = useState(false);
   const [currentNotification, setCurrentNotification] = useState<Notification | null>(null);
 
@@ -31,7 +30,6 @@ export default function PusherNotifications() {
     channel.bind('notification', (data: Notification) => {
       console.log('📬 Received notification:', data);
       
-      setNotifications(prev => [data, ...prev]);
       setCurrentNotification(data);
       setShowToast(true);
 

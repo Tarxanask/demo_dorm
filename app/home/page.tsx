@@ -323,60 +323,32 @@ function HomeContent() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {currentDorm && (
-              <>
-                <Link
-                  href={`/dorm/${encodeURIComponent(currentDorm.id)}/members`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    background: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f9fafb';
-                    e.currentTarget.style.borderColor = '#d1d5db';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
-                >
-                  <FiUsers size={16} color="#667eea" />
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Members</span>
-                </Link>
-                <Link
-                  href={`/dorm/${encodeURIComponent(currentDorm.id)}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    background: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f9fafb';
-                    e.currentTarget.style.borderColor = '#d1d5db';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
-                >
-                  <FiHash size={16} color="#667eea" />
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Info</span>
-                </Link>
-              </>
+              <Link
+                href={`/dorm/${encodeURIComponent(currentDorm.id)}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#f9fafb';
+                  e.currentTarget.style.borderColor = '#d1d5db';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'white';
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                }}
+              >
+                <FiHash size={16} color="#667eea" />
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Info</span>
+              </Link>
             )}
           </div>
         </div>
@@ -395,13 +367,27 @@ function HomeContent() {
               gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
               gap: '12px'
             }}>
-              <div style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '16px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: '1px solid #f3f4f6'
-              }}>
+              <Link
+                href={currentDorm ? `/dorm/${encodeURIComponent(currentDorm.id)}/members` : '#'}
+                style={{
+                  background: 'white',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  border: '1px solid #f3f4f6',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.borderColor = currentDorm?.color || '#667eea';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.borderColor = '#f3f4f6';
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
                     width: '40px',
@@ -422,15 +408,29 @@ function HomeContent() {
                     <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: 500 }}>Members</div>
                   </div>
                 </div>
-              </div>
+              </Link>
               
-              <div style={{
-                background: 'white',
-                borderRadius: '12px',
-                padding: '16px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: '1px solid #f3f4f6'
-              }}>
+              <Link
+                href={currentDorm ? `/chat/${encodeURIComponent(currentDorm.id)}` : '#'}
+                style={{
+                  background: 'white',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  border: '1px solid #f3f4f6',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.borderColor = '#3b82f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.borderColor = '#f3f4f6';
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
                     width: '40px',
@@ -451,7 +451,7 @@ function HomeContent() {
                     <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: 500 }}>Messages</div>
                   </div>
                 </div>
-              </div>
+              </Link>
               
               <div style={{
                 background: 'white',
