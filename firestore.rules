@@ -42,11 +42,12 @@ service cloud.firestore {
         request.auth.uid == resource.data.hostId;
     }
     
-    // Notifications - users can read their own, any authenticated user can create
+    // Notifications - users can read their own, any authenticated user can create for anyone
     match /notifications/{notificationId} {
       allow read: if request.auth != null && 
         request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null;
+      // Allow any authenticated user to create notifications for other users
+      allow create: if request.auth != null && request.resource.data.userId != null;
       allow update: if request.auth != null && 
         request.auth.uid == resource.data.userId;
       allow delete: if request.auth != null && 

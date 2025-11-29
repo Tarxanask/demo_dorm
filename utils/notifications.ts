@@ -128,9 +128,12 @@ export function subscribeToNotifications(
     limit(10)
   );
 
+  let isFirstSnapshot = true;
+
   return onSnapshot(q, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
-      if (change.type === 'added') {
+      // Only show notifications for newly added documents (not on initial load)
+      if (change.type === 'added' && !isFirstSnapshot) {
         const data = change.doc.data();
         onNotification({
           id: change.doc.id,
@@ -138,5 +141,10 @@ export function subscribeToNotifications(
         } as Notification);
       }
     });
+    
+    // After first snapshot, mark as not first
+    if (isFirstSnapshot) {
+      isFirstSnapshot = false;
+    }
   });
 }
