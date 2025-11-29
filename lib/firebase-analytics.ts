@@ -12,7 +12,7 @@ export const trackPageView = (pageName: string) => {
   }
 };
 
-export const trackEvent = (eventName: string, params?: Record<string, any>) => {
+export const trackEvent = (eventName: string, params?: Record<string, string | number | boolean>) => {
   if (analytics) {
     logEvent(analytics, eventName, params);
     console.log('📊 Event tracked:', eventName, params);
