@@ -304,7 +304,6 @@ export default function GlobalChatPage() {
           messages.map((message) => {
             if (message.deleted) return null;
             
-            const user = userCache[message.userId];
             const isOwnMessage = message.userId === currentUser?.uid;
             
             return (
