@@ -72,6 +72,36 @@ export async function notifyDormUsers(
   }
 }
 
+// Send notification to all users (for global chat)
+export async function notifyAllUsers(
+  title: string,
+  message: string,
+  data?: { type: 'message' | 'event' | 'info'; url?: string }
+) {
+  try {
+    // Get all users
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    
+    // Send notification to each user
+    const promises = usersSnapshot.docs.map(doc => 
+      sendNotification(doc.id, {
+        title,
+        message,
+        type: data?.type || 'info',
+        url: data?.url
+      })
+    );
+    
+    await Promise.all(promises);
+    console.log(`✅ Sent notifications to ${promises.length} users globally`);
+    
+    return true;
+  } catch (error) {
+    console.error('Error notifying all users:', error);
+    return false;
+  }
+}
+
 // Mark notification as read
 export async function markNotificationAsRead(notificationId: string) {
   try {
