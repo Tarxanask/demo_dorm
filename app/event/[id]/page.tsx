@@ -127,11 +127,12 @@ export default function EventDetailsPage() {
       console.log('Message sent successfully with ID:', docRef.id);
       
       setNewMessage('');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { code?: string; message?: string };
       console.error('Error sending message:', error);
-      console.error('Error code:', error?.code);
-      console.error('Error message:', error?.message);
-      alert(`Failed to send message: ${error?.message || 'Unknown error'}. Please try again.`);
+      console.error('Error code:', err?.code);
+      console.error('Error message:', err?.message);
+      alert(`Failed to send message: ${err?.message || 'Unknown error'}. Please try again.`);
     }
   }
 
@@ -210,7 +211,7 @@ export default function EventDetailsPage() {
       const eventRef = doc(db, 'events', event.id);
       
       // Join event with optional anonymity
-      const updateData: any = {
+      const updateData: { participants: any; anonymousParticipants?: any; [key: string]: any } = {
         participants: arrayUnion(currentUser.uid)
       };
       

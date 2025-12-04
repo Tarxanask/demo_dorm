@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import { Event } from '@/firebase/types';
 import Link from 'next/link';
+import Image from 'next/image';
 import { format } from 'date-fns';
 
 type ESNUniversity = 'VMU' | 'KTU' | 'LSMU';
@@ -233,9 +234,11 @@ export default function ESNEventsPage() {
                 }}
                 >
                   {event.imageURL && (
-                    <img 
+                    <Image 
                       src={event.imageURL} 
                       alt={event.title}
+                      width={400}
+                      height={200}
                       style={{
                         width: '100%',
                         height: '200px',

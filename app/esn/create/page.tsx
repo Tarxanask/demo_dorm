@@ -449,7 +449,7 @@ export default function CreateESNEventPage() {
                 </button>
               </div>
 
-              {customFields.map((field, index) => (
+              {customFields.map((field) => (
                 <div key={field.id} style={{ 
                   marginBottom: '1rem',
                   padding: '1rem',
@@ -478,7 +478,7 @@ export default function CreateESNEventPage() {
                   {/* Field Type */}
                   <select
                     value={field.type}
-                    onChange={(e) => updateCustomField(field.id, { type: e.target.value as any })}
+                    onChange={(e) => updateCustomField(field.id, { type: e.target.value as 'text' | 'textarea' | 'checkbox' })}
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -551,7 +551,7 @@ export default function CreateESNEventPage() {
                   fontSize: '0.9rem',
                   margin: 0
                 }}>
-                  No custom fields added. Click "Add Field" to create registration questions.
+                  No custom fields added. Click &quot;Add Field&quot; to create registration questions.
                 </p>
               )}
             </div>
