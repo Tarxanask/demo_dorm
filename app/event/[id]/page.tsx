@@ -211,7 +211,7 @@ export default function EventDetailsPage() {
       const eventRef = doc(db, 'events', event.id);
       
       // Join event with optional anonymity
-      const updateData: { participants: any; anonymousParticipants?: any; [key: string]: any } = {
+      const updateData: Record<string, unknown> = {
         participants: arrayUnion(currentUser.uid)
       };
       
