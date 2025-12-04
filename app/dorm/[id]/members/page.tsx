@@ -168,7 +168,7 @@ export default function MembersPage() {
                         border: '2px solid #e0e0e0'
                       }}
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/default-avatar.png';
+                        e.currentTarget.style.display = 'none';
                       }}
                     />
                   ) : (
@@ -176,10 +176,18 @@ export default function MembersPage() {
                       width: '100px',
                       height: '100px',
                       borderRadius: '50%',
-                      background: 'rgba(255, 255, 255, 0.2)',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       margin: '0 auto 0.5rem',
-                      border: '2px solid rgba(255, 255, 255, 0.3)'
-                    }} />
+                      border: '2px solid #e0e0e0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2.5rem',
+                      color: '#ffffff',
+                      fontWeight: '600'
+                    }}>
+                      {member.displayName?.charAt(0).toUpperCase() || '?'}
+                    </div>
                   )}
                   <div style={{ fontWeight: '600', marginBottom: '0.25rem', color: '#ffffff' }}>
                     {member.displayName}

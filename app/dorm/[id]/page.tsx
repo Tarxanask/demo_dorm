@@ -28,10 +28,10 @@ const DORM_INFO: Record<DormType, { location: string; facilities: string[]; desc
     description: 'Solo Society features a game room (table tennis, table football, etc.), a PS5 zone, and a rooftop terrace — great for organising game tournaments or evening chill-outs. There\'s also a study room with a piano and a cool basement leisure zone — perfect for music sessions or creative events.',
     image: '/images_dorms/SoloSociety.png'
   },
-  'Baltija VDU': {
-    location: 'Vytauto pr. 71, Kaunas',
-    facilities: ['WiFi', 'Laundry', 'Kitchen', 'Study Room', 'Rooftop with View', 'Modern Lobby'],
-    description: 'On the top floor there\'s a great view over Kaunas — perfect for social snaps or rooftop-type meetups. The lobby is comfortable and the building is modern after renovation — this makes hosting events easy. Because of the central location and modern feel, it\'s ideal for a dorm-wide fun gathering.',
+  'VMU Dorms': {
+    location: 'Vytauto pr. 71, Kaunas; Universiteto g. 8, Akademija',
+    facilities: ['WiFi', 'Laundry', 'Kitchen', 'Study Room', 'Rooftop with View', 'Modern Lobby', 'Free Broadband Internet', 'Parking Spaces', 'Music Room with Pianos', 'Reading Room', 'Table Tennis Area', 'Recreation Area', 'Meditation Room'],
+    description: 'On the top floor there\'s a great view over Kaunas — perfect for social snaps or rooftop-type meetups. The lobby is comfortable and the building is modern after renovation — this makes hosting events easy. Because of the central location and modern feel, it\'s ideal for a dorm-wide fun gathering. VMU Dorms feature excellent communal areas including a Music Room with pianos on the 1st floor, Reading Room on the 2nd floor, Table Tennis Area on the 3rd floor, Recreation Area on the 4th floor, and a Meditation Room on the 5th floor — perfect for relaxation, study sessions, or social activities.',
     image: '/images_dorms/Other dorm.png'
   },
   'Other Dorms': {

@@ -46,7 +46,7 @@ function ChatPageContent() {
       'KTU': '/images_dorms/KTU.png',
       'Other Dorms': '/images_dorms/Baltija VDU.png',
       'Solo Society': '/images_dorms/SoloSociety.png',
-      'Baltija VDU': '/images_dorms/Other dorm.png',
+      'VMU Dorms': '/images_dorms/Other dorm.png',
       'General Community': '/images_dorms/GE.png',
       'Global': '/images_dorms/GE.png'
     };
@@ -312,30 +312,31 @@ function ChatPageContent() {
           style={{ textDecoration: 'none', flexShrink: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid rgba(255,255,255,0.2)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            overflow: 'hidden',
-            position: 'relative'
-          }}
-          onMouseEnter={(e) => {
-            if (window.innerWidth > 768) {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(14, 165, 233, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = 'none';
-          }}
+          <div 
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid rgba(255,255,255,0.2)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+            onMouseEnter={(e) => {
+              if (window.innerWidth > 768) {
+                e.currentTarget.style.transform = 'scale(1.1)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(14, 165, 233, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             <img 
               src={getDormLogo(dormId)} 
@@ -467,31 +468,62 @@ function ChatPageContent() {
                   style={{ textDecoration: 'none', flexShrink: 0 }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <img 
-                    src={message.userPhoto || userCache[message.userId]?.photoURL || '/default-avatar.png'} 
-                    alt={message.userName}
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      alignSelf: 'flex-end',
-                      cursor: 'pointer',
-                      border: '2px solid #e0e0e0',
-                      transition: 'transform 0.2s'
-                    }}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/default-avatar.png';
-                    }}
-                    onMouseEnter={(e) => {
-                      if (window.innerWidth > 768) {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  />
+                  {message.userPhoto || userCache[message.userId]?.photoURL ? (
+                    <img 
+                      src={message.userPhoto || userCache[message.userId]?.photoURL || ''} 
+                      alt={message.userName}
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        alignSelf: 'flex-end',
+                        cursor: 'pointer',
+                        border: '2px solid #e0e0e0',
+                        transition: 'transform 0.2s'
+                      }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                      onMouseEnter={(e) => {
+                        if (window.innerWidth > 768) {
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1rem',
+                        color: '#ffffff',
+                        fontWeight: '600',
+                        alignSelf: 'flex-end',
+                        cursor: 'pointer',
+                        border: '2px solid #e0e0e0',
+                        transition: 'transform 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (window.innerWidth > 768) {
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    >
+                      {message.userName?.charAt(0).toUpperCase() || '?'}
+                    </div>
+                  )}
                 </Link>
               )}
               {!isOwnMessage && !showAvatar && (
@@ -658,31 +690,62 @@ function ChatPageContent() {
                   style={{ textDecoration: 'none', flexShrink: 0 }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <img 
-                    src={userData?.photoURL || '/default-avatar.png'} 
-                    alt={userData?.displayName}
-                    style={{
-                      width: '36px',
-                      height: '36px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      alignSelf: 'flex-end',
-                      cursor: 'pointer',
-                      border: '2px solid #0070f3',
-                      transition: 'transform 0.2s'
-                    }}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/default-avatar.png';
-                    }}
-                    onMouseEnter={(e) => {
-                      if (window.innerWidth > 768) {
-                        e.currentTarget.style.transform = 'scale(1.1)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  />
+                  {userData?.photoURL ? (
+                    <img 
+                      src={userData?.photoURL} 
+                      alt={userData?.displayName}
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        alignSelf: 'flex-end',
+                        cursor: 'pointer',
+                        border: '2px solid #0070f3',
+                        transition: 'transform 0.2s'
+                      }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                      onMouseEnter={(e) => {
+                        if (window.innerWidth > 768) {
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1rem',
+                        color: '#ffffff',
+                        fontWeight: '600',
+                        alignSelf: 'flex-end',
+                        cursor: 'pointer',
+                        border: '2px solid #0070f3',
+                        transition: 'transform 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (window.innerWidth > 768) {
+                          e.currentTarget.style.transform = 'scale(1.1)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    >
+                      {userData?.displayName?.charAt(0).toUpperCase() || '?'}
+                    </div>
+                  )}
                 </Link>
               )}
               {isOwnMessage && !showAvatar && (

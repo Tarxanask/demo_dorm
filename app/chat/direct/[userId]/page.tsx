@@ -210,19 +210,38 @@ export default function DirectChatPage() {
               }}
             >
               {!isOwn && (
-                <img 
-                  src={message.fromUserPhoto || '/default-avatar.png'} 
-                  alt={message.fromUserName}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    objectFit: 'cover'
-                  }}
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                message.fromUserPhoto ? (
+                  <img 
+                    src={message.fromUserPhoto} 
+                    alt={message.fromUserName}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      objectFit: 'cover'
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.2rem',
+                      color: '#ffffff',
+                      fontWeight: '600'
+                    }}
+                  >
+                    {message.fromUserName?.charAt(0).toUpperCase() || '?'}
+                  </div>
+                )
               )}
 
               <div style={{

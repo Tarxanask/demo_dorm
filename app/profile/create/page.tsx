@@ -12,7 +12,7 @@ const DORMS: { id: DormType; name: string }[] = [
   { id: 'KTU', name: 'KTU' },
   { id: 'LSMU', name: 'LSMU' },
   { id: 'Solo Society', name: 'Solo Society' },
-  { id: 'Baltija VDU', name: 'Baltija VDU' },
+  { id: 'VMU Dorms', name: 'VMU Dorms' },
   { id: 'Other Dorms', name: 'Other Dorms' },
   { id: 'General Community', name: 'General Community' }
 ];

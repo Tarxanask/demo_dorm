@@ -53,11 +53,14 @@ export default function EventsPage() {
           } as Event;
         });
         
-        // Filter out past events (events where the date has passed)
+        // Filter out past events and ESN events
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
         
         const activeEvents = eventsList.filter(event => {
+          // Exclude ESN events (they should only appear on /esn page)
+          if (event.isESNEvent) return false;
+          
           const eventDate = new Date(event.date);
           eventDate.setHours(0, 0, 0, 0);
           return eventDate >= today;
@@ -224,7 +227,7 @@ export default function EventsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
                     <h2 style={{ marginBottom: '0.5rem' }}>{event.title}</h2>
                   </div>
-                  <div style={{ color: '#666', marginBottom: '0.5rem' }}>
+                  <div style={{ color: '#9CA3AF', marginBottom: '0.5rem' }}>
                     <div><strong>Host:</strong> {event.hostName}</div>
                     {!event.isHostResident && dormId !== 'General Community' && (
                       <div style={{ 

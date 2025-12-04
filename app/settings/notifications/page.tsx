@@ -12,7 +12,7 @@ const DORM_INFO: Record<string, { name: string; icon: string }> = {
   'KTU': { name: 'KTU Dormitories', icon: '🧑‍💻' },
   'LSMU': { name: 'LSMU Dormitories', icon: '⚕️' },
   'Solo Society': { name: 'Solo Society', icon: '🏓' },
-  'Baltija VDU': { name: 'Baltija VDU', icon: '🎓' },
+  'VMU Dorms': { name: 'VMU Dorms', icon: '🎓' },
   'Other Dorms': { name: 'Other Dorms', icon: '🏘️' },
   'General Community': { name: 'General Community', icon: '🤞' }
 };
@@ -24,7 +24,7 @@ const defaultPreferences: NotificationPreferences = {
 };
 
 // All available dorms
-const ALL_DORMS: DormType[] = ['KTU', 'LSMU', 'Solo Society', 'Baltija VDU', 'Other Dorms', 'General Community'];
+const ALL_DORMS: DormType[] = ['KTU', 'LSMU', 'Solo Society', 'VMU Dorms', 'Other Dorms', 'General Community'];
 
 export default function NotificationSettingsPage() {
   const { currentUser } = useAuth();

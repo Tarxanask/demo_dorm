@@ -16,7 +16,7 @@ const DORMS: { id: DormType; name: string }[] = [
   { id: 'KTU', name: 'KTU' },
   { id: 'LSMU', name: 'LSMU' },
   { id: 'Solo Society', name: 'Solo Society' },
-  { id: 'Baltija VDU', name: 'Baltija VDU' },
+  { id: 'VMU Dorms', name: 'VMU Dorms' },
   { id: 'Other Dorms', name: 'Other Dorms' },
   { id: 'General Community', name: 'General Community' }
 ];
@@ -36,6 +36,7 @@ function CreateEventContent() {
   }, [searchParams]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [desiredParticipants, setDesiredParticipants] = useState(5);
@@ -102,6 +103,7 @@ function CreateEventContent() {
         isHostResident,
         title,
         description,
+        location,
         date,
         time,
         desiredParticipants,
@@ -124,11 +126,7 @@ function CreateEventContent() {
         alert('🎉 Event created successfully!');
         
         // Redirect based on dormId  
-        if (dormId === 'General Community') {
-          router.push('/events/general');
-        } else {
-          router.push(`/events/${dormId}`);
-        }
+        router.push(`/events/${dormId}`);
       } catch (error) {
         console.error('Error creating event:', error);
         setError('Failed to create event. Please try again.');
@@ -312,6 +310,16 @@ function CreateEventContent() {
               onChange={(e) => setDescription(e.target.value)}
               required
               rows={5}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Location</label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g., VMU Main Building, Room 301"
             />
           </div>
 

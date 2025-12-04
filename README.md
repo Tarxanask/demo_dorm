@@ -1,6 +1,6 @@
 # Kaunas Dorm Connect - Progressive Web App
 
-A Progressive Web App (PWA) that connects residents from Kaunas dormitories (KTU, LSMU, Solo Society, Baltija VDU, and Other Dorms). The app enables residents to organize events, chat with each other, and find friends across different dormitories.
+A Progressive Web App (PWA) that connects residents from Kaunas dormitories (KTU, LSMU, Solo Society, VMU Dorms, and Other Dorms). The app enables residents to organize events, chat with each other, and find friends across different dormitories.
 
 ## Features
 

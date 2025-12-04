@@ -24,6 +24,14 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
     }
     
+    // Event chat messages - authenticated users can read and create
+    match /eventChatMessages/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    
     // Direct messages - users can only read their own conversations
     match /directMessages/{messageId} {
       allow read: if request.auth != null && 

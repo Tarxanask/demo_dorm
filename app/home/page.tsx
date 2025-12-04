@@ -14,7 +14,7 @@ const DORMS: { id: DormType; name: string; color: string }[] = [
   { id: 'KTU', name: 'KTU', color: '#3b82f6' },
   { id: 'LSMU', name: 'LSMU', color: '#10b981' },
   { id: 'Solo Society', name: 'Solo Society', color: '#8b5cf6' },
-  { id: 'Baltija VDU', name: 'Baltija VDU', color: '#f97316' },
+  { id: 'VMU Dorms', name: 'VMU', color: '#f97316' },
   { id: 'Other Dorms', name: 'Other Dorms', color: '#ec4899' },
   { id: 'General Community', name: 'General Community', color: '#06b6d4' }
 ];
@@ -28,7 +28,7 @@ function HomeContent() {
     'KTU': 0,
     'LSMU': 0,
     'Solo Society': 0,
-    'Baltija VDU': 0,
+    'VMU Dorms': 0,
     'Other Dorms': 0,
     'General Community': 0,
     'Global': 0
@@ -37,7 +37,7 @@ function HomeContent() {
     'KTU': 0,
     'LSMU': 0,
     'Solo Society': 0,
-    'Baltija VDU': 0,
+    'VMU Dorms': 0,
     'Other Dorms': 0,
     'General Community': 0,
     'Global': 0
@@ -46,7 +46,7 @@ function HomeContent() {
     'KTU': 0,
     'LSMU': 0,
     'Solo Society': 0,
-    'Baltija VDU': 0,
+    'VMU Dorms': 0,
     'Other Dorms': 0,
     'General Community': 0,
     'Global': 0
@@ -79,13 +79,13 @@ function HomeContent() {
     async function fetchStats() {
       // Fetch member counts
       const counts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'VMU Dorms': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
       const eventCounts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'VMU Dorms': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
       const msgCounts: Record<DormType, number> = {
-        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'Baltija VDU': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
+        'KTU': 0, 'LSMU': 0, 'Solo Society': 0, 'VMU Dorms': 0, 'Other Dorms': 0, 'General Community': 0, 'Global': 0
       };
 
       for (const dorm of DORMS) {
@@ -214,12 +214,12 @@ function HomeContent() {
 
         {/* Global Events Icon */}
         <Link 
-          href="/events/general"
+          href="/events/General%20Community"
           style={{
             width: '48px',
             height: '48px',
-            background: pathname === '/events/general' ? '#667eea' : 'transparent',
-            borderRadius: pathname === '/events/general' ? '12px' : '24px',
+            background: pathname === '/events/General%20Community' ? '#667eea' : 'transparent',
+            borderRadius: pathname === '/events/General%20Community' ? '12px' : '24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -229,19 +229,63 @@ function HomeContent() {
             textDecoration: 'none'
           }}
           onMouseEnter={(e) => {
-            if (pathname !== '/events/general') {
+            if (pathname !== '/events/General%20Community') {
               e.currentTarget.style.background = '#2a2a2a';
               e.currentTarget.style.borderRadius = '12px';
             }
           }}
           onMouseLeave={(e) => {
-            if (pathname !== '/events/general') {
+            if (pathname !== '/events/General%20Community') {
               e.currentTarget.style.background = 'transparent';
               e.currentTarget.style.borderRadius = '24px';
             }
           }}
         >
           <FiCalendar size={24} />
+        </Link>
+
+        {/* ESN Events Icon */}
+        <Link 
+          href="/esn"
+          title="ESN Events"
+          style={{
+            width: '48px',
+            height: '48px',
+            background: pathname === '/esn' || pathname?.startsWith('/esn/') ? '#667eea' : 'transparent',
+            borderRadius: pathname === '/esn' || pathname?.startsWith('/esn/') ? '12px' : '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            textDecoration: 'none',
+            overflow: 'hidden'
+          }}
+          onMouseEnter={(e) => {
+            if (pathname !== '/esn' && !pathname?.startsWith('/esn/')) {
+              e.currentTarget.style.background = '#2a2a2a';
+              e.currentTarget.style.borderRadius = '12px';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (pathname !== '/esn' && !pathname?.startsWith('/esn/')) {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderRadius = '24px';
+            }
+          }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="28" 
+            height="28" 
+            fill="currentColor" 
+            viewBox="0 0 16 16"
+            style={{
+              color: pathname === '/esn' || pathname?.startsWith('/esn/') ? '#ffffff' : 'rgba(255, 255, 255, 0.6)'
+            }}
+          >
+            <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484-.08.08-.162.158-.242.234-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/>
+          </svg>
         </Link>
         
         <div style={{ width: '32px', height: '2px', background: '#2a2a2a', borderRadius: '1px' }}></div>
@@ -540,46 +584,6 @@ function HomeContent() {
                       ? 'Connect with community members'
                       : 'Connect with your dorm members'
                     }
-                  </p>
-                </Link>
-                
-                <Link
-                  href={currentDorm ? `/events/${encodeURIComponent(currentDorm.id)}` : '/home'}
-                  style={{
-                    background: 'white',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                    border: '1px solid #f3f4f6',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-                    e.currentTarget.style.borderColor = '#10b981';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                    e.currentTarget.style.borderColor = '#f3f4f6';
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      background: '#d1fae5',
-                      borderRadius: '10px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <FiCalendar size={20} color="#10b981" />
-                    </div>
-                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>See Events</span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#6b7280', marginLeft: '52px', margin: 0 }}>
-                    View upcoming activities
                   </p>
                 </Link>
               </div>
